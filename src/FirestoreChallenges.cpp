@@ -1,4 +1,4 @@
-#include "FirestorChallenges.h"
+#include "FirestoreChallenges.h"
 
 FirestoreChallenges::FirestoreChallenges(FirebaseData* firebaseData, String projId) {
   fbdo = firebaseData;
