@@ -1,7 +1,6 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#include "DHT.h"
 #include <DFRobot_GDL.h>
 
 #define PIN_BT_GREEN 17
@@ -17,16 +16,14 @@
 #define TFT_RST 4
 extern DFRobot_ST7789_240x320_HW_SPI screen(TFT_DC, TFT_CS, TFT_RST);
 
-#define DHT_TYPE DHT22
-#define DHT_VRY 35
-//#define DHT_SW 34
-extern DHT dht(DHT_VRY, DHT_TYPE);
-
 #define WIFI_SSID "PORTABLEJÉ_1712"
 #define WIFI_PASSWORD ";92454nV"
 
 #define API_KEY "AIzaSyBhRtCNuBjgNDw-QLu6MsQwkcCqeDlwOmI"
 #define FIREBASE_PROJECT_ID "tp2-object-connecter"
+
+#define JOY_Y 35
+#define JOY_BTN 34
 
 enum COLOR {
     NONE,
