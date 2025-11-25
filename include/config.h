@@ -1,13 +1,26 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define PIN_BT_BLUE 16
-#define PIN_BT_WHITE 27
-#define PIN_BT_YELLOW 14
+#include "DHT.h"
+#include <DFRobot_GDL.h>
 
-#define PIN_LED_BLUE 17
-#define PIN_LED_WHITE 25
-#define PIN_LED_YELLOW 26
+#define PIN_BT_GREEN 17
+#define PIN_BT_WHITE 16
+#define PIN_BT_RED 15
+
+#define PIN_LED_GREEN 32
+#define PIN_LED_WHITE 19
+#define PIN_LED_RED 21
+
+#define TFT_DC 2
+#define TFT_CS 5
+#define TFT_RST 4
+extern DFRobot_ST7789_240x320_HW_SPI screen(TFT_DC, TFT_CS, TFT_RST);
+
+#define DHT_TYPE DHT22
+#define DHT_VRY 35
+//#define DHT_SW 34
+extern DHT dht(DHT_VRY, DHT_TYPE);
 
 #define WIFI_SSID "PORTABLEJÉ_1712"
 #define WIFI_PASSWORD ";92454nV"
@@ -20,6 +33,13 @@ enum COLOR {
     BLUE,
     WHITE,
     YELLOW
+};
+
+enum ScreenMode {
+    MODE_MENU,
+    MODE_TEMP,
+    MODE_HUMID,
+    MODE_LED
 };
 
 #endif // CONFIG_H
