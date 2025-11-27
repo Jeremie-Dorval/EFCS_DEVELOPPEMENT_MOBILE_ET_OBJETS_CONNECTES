@@ -1,20 +1,23 @@
 #include "game.h"
 #include "led.h"
 #include "button.h"
+#include "LCD.h"
 
 using namespace std;
 
 LED led;
 Button button;
+LCD lcd;
 
 vector<int> Game::sequence = {};
 
 void Game::init() {
-    led.begin();
-    button.begin();
-    record = 0;
-    lastRecord = 0;
-    sequence.clear();
+  led.begin();
+  button.begin();
+  lcd.begin();
+  record = 0;
+  lastRecord = 0;
+  sequence.clear();
 }
 
 void Game::playSequence() {

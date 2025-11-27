@@ -61,38 +61,7 @@ void LCD::openSelectedItem() {
 }
 
 void LCD::drawCurrentScreen() {
-    char buffer[10];
-
-    switch (currentMode) {
-        case 0:
-            clear();
-            screen.setCursor(10, 50);
-            screen.print("Température : ");
-
-            dtostrf(dht.readTemperature(), 4, 1, buffer);
-            screen.print(buffer);
-            screen.print(" °C");
-            break;
-
-        case 1:
-            clear();
-            screen.setCursor(10, 50);
-            screen.print("Humidité : ");
-
-            dtostrf(dht.readHumidity(), 4, 1, buffer);
-            screen.print(buffer);
-            screen.print(" %");
-            break;
-
-        case 2:
-            clear();
-            screen.setCursor(10, 50);
-            screen.print("LED RGB");
-            break;
-
-        default:
-            break;
-    }
+    
 }
 
 bool LCD::handleReturnClick() {
