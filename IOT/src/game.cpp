@@ -7,14 +7,12 @@ using namespace std;
 
 LED led;
 Button button;
-LCD lcd;
 
 vector<int> Game::sequence = {};
 
 void Game::init() {
   led.begin();
   button.begin();
-  lcd.begin();
   record = 0;
   lastRecord = 0;
   sequence.clear();

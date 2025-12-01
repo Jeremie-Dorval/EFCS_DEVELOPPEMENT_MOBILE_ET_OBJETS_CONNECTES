@@ -1,6 +1,8 @@
-#include "connFirebase.h"
+#include "manageFirebase.h"
+#include "addons/TokenHelper.h"
+#include "addons/RTDBHelper.h"
 
-void ConnFirebase::connexion() {
+void ManageFirebase::connexion() {
   config.api_key = API_KEY;
   config.token_status_callback = tokenStatusCallback;
   auth.user.email = "";

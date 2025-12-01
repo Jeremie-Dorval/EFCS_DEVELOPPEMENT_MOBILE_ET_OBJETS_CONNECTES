@@ -1,11 +1,8 @@
-#include <Arduino.h>
 #include <WiFi.h>
 #include <Firebase_ESP_Client.h>
-#include "addons/TokenHelper.h"
-#include "addons/RTDBHelper.h"
 #include "config.h"
 
-class ConnFirebase {
+class ManageFirebase {
     public:
         void connexion();
 

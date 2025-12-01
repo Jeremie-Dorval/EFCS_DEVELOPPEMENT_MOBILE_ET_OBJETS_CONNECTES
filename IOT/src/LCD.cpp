@@ -1,5 +1,7 @@
 #include "LCD.h"
 
+DFRobot_ST7789_240x320_HW_SPI screen(TFT_DC, TFT_CS, TFT_RST);
+
 void LCD::begin() {
     screen.begin();
     screen.fillScreen(COLOR_RGB565_BLACK);

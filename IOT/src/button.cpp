@@ -1,9 +1,9 @@
 #include "button.h"
 
 void Button::begin() {
-    pinMode(PIN_BT_BLUE, INPUT_PULLUP);
+    pinMode(PIN_BT_GREEN, INPUT_PULLUP);
     pinMode(PIN_BT_WHITE, INPUT_PULLUP);
-    pinMode(PIN_BT_YELLOW, INPUT_PULLUP);
+    pinMode(PIN_BT_RED, INPUT_PULLUP);
 }
 
 void Button::setButtonColor(int color) {
@@ -15,11 +15,11 @@ int Button::getButtonColor() {
 }
 
 bool Button::isPressed() {
-    if(digitalRead(PIN_BT_BLUE) == LOW) {
+    if(digitalRead(PIN_BT_GREEN) == LOW) {
         setButtonColor(BLUE);
         _pressStartTime = millis();
         delay(50); // small delay for debounce
-        if(digitalRead(PIN_BT_BLUE) == LOW) {
+        if(digitalRead(PIN_BT_GREEN) == LOW) {
             return true;
         }
     }
@@ -31,11 +31,11 @@ bool Button::isPressed() {
             return true;
         }
     }
-    else if(digitalRead(PIN_BT_YELLOW) == LOW) {
+    else if(digitalRead(PIN_BT_RED) == LOW) {
         setButtonColor(YELLOW);
         _pressStartTime = millis();
         delay(50); // small delay for debounce
-        if(digitalRead(PIN_BT_YELLOW) == LOW) {
+        if(digitalRead(PIN_BT_RED) == LOW) {
             return true;
         }
     }

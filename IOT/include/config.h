@@ -14,13 +14,12 @@
 #define TFT_DC 2
 #define TFT_CS 5
 #define TFT_RST 4
-extern DFRobot_ST7789_240x320_HW_SPI screen(TFT_DC, TFT_CS, TFT_RST);
 
 #define WIFI_SSID "PORTABLEJÉ_1712"
 #define WIFI_PASSWORD ";92454nV"
 
-#define API_KEY "AIzaSyBhRtCNuBjgNDw-QLu6MsQwkcCqeDlwOmI"
-#define FIREBASE_PROJECT_ID "tp2-object-connecter"
+#define API_KEY "AIzaSyDjwhAa0Cq-LeE27MiERX9S-N11ERXLido"
+#define FIREBASE_PROJECT_ID "efcs25"
 
 #define JOY_Y 35
 #define JOY_BTN 34
