@@ -8,8 +8,6 @@ using namespace std;
 LED led;
 Button button;
 
-vector<int> Game::sequence = {};
-
 void Game::init() {
   led.begin();
   button.begin();
@@ -27,15 +25,16 @@ void Game::playSequence() {
   }
 }
 
+void Game::setSequence(const String seq) {
+    sequence = seq;
+}
+
 bool Game::playerTurn() {
-  for(int i = 0; i < sequence.size(); i++) {
-    int playerColor = -1;
+  for(int i = 0; i < sequence.length(); i++) {
 
     while(!button.isPressed()) {
       delay(10);
     }
-
-    playerColor = button.getButtonColor();
 
     if(button.isPressed()) {
       if(button.sameColor(sequence[i])) {
@@ -53,8 +52,6 @@ bool Game::playerTurn() {
       delay(10);
     }
   }
-
-  upRecord();
 
   return true;
 }
@@ -78,15 +75,14 @@ void Game::gameOver() {
     record = 0;
 }
 
-void Game::addLEDSequence() {
-    int randLED = led.RandomLED();
-    sequence.push_back(randLED);
-}
-
 void Game::resetGame() {
     sequence.clear();
 }
 
 void Game::upRecord() {
     record++;
+}
+
+int Game::getRecord() {
+    return record;
 }

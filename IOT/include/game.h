@@ -8,15 +8,16 @@ class Game {
     public:
         void init();
         void playSequence();
+        void setSequence(const String seq);
         bool playerTurn();
         void gameOver();
-        void addLEDSequence();
         void resetGame();
+        int getRecord();
 
     private:
         int record;
         int lastRecord;
-        static vector<int> sequence;
+        String sequence;
 
         void upRecord();
 };

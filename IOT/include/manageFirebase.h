@@ -5,6 +5,7 @@
 class ManageFirebase {
     public:
         void connexion();
+        FirebaseData& getFirebaseData();
 
     private: 
         FirebaseAuth auth;

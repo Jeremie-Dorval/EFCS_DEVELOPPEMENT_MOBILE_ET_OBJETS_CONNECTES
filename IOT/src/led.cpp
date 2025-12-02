@@ -20,7 +20,7 @@ void LED::allOn() {
 }
 
 void LED::ledOn(int led) {
-    if(led == BLUE) {
+    if(led == GREEN) {
         digitalWrite(PIN_LED_GREEN, HIGH);
     } 
     else if (led == WHITE) {
@@ -38,7 +38,7 @@ void LED::allOff() {
 }
 
 void LED::ledOff(int led) {
-    if(led == BLUE) {
+    if(led == GREEN) {
         digitalWrite(PIN_LED_GREEN, LOW);
     } 
     else if (led == WHITE) {

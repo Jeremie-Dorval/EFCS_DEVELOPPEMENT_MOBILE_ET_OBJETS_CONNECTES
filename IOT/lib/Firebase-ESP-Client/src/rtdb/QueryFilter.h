@@ -58,35 +58,35 @@ public:
     QueryFilter &limitToLast(T val) { return mLimitToLast(toStringPtr(val, -1)); }
 
     template <typename T = int>
-    auto startAt(T val) -> typename enable_if<is_same<T, float>::value || is_same<T, double>::value ||
+    auto startAt(T val) -> typename mb_string::enable_if<mb_string::is_same<T, float>::value || mb_string::is_same<T, double>::value ||
                                                   is_num_int<T>::value,
                                               QueryFilter &>::type { return mStartAt(toStringPtr(val, -1), false); }
 
     template <typename T = int>
-    auto endAt(T val) -> typename enable_if<is_same<T, float>::value || is_same<T, double>::value ||
+    auto endAt(T val) -> typename mb_string::enable_if<mb_string::is_same<T, float>::value || mb_string::is_same<T, double>::value ||
                                                 is_num_int<T>::value,
                                             QueryFilter &>::type { return mEndAt(toStringPtr(val, -1), false); }
 
     template <typename T = const char *>
-    auto startAt(T val) -> typename enable_if<is_string<T>::value, QueryFilter &>::type
+    auto startAt(T val) -> typename mb_string::enable_if<mb_string::is_string<T>::value, QueryFilter &>::type
     {
         return mStartAt(toStringPtr(val), true);
     }
 
     template <typename T = const char *>
-    auto endAt(T val) -> typename enable_if<is_string<T>::value, QueryFilter &>::type
+    auto endAt(T val) -> typename mb_string::enable_if<mb_string::is_string<T>::value, QueryFilter &>::type
     {
         return mEndAt(toStringPtr(val), true);
     }
 
     template <typename T = int>
-    auto equalTo(T val) -> typename enable_if<is_num_int<T>::value, QueryFilter &>::type
+    auto equalTo(T val) -> typename mb_string::enable_if<is_num_int<T>::value, QueryFilter &>::type
     {
         return mEqualTo(toStringPtr(val), false);
     }
 
     template <typename T = const char *>
-    auto equalTo(T val) -> typename enable_if<is_string<T>::value, QueryFilter &>::type
+    auto equalTo(T val) -> typename mb_string::enable_if<mb_string::is_string<T>::value, QueryFilter &>::type
     {
         return mEqualTo(toStringPtr(val), true);
     }

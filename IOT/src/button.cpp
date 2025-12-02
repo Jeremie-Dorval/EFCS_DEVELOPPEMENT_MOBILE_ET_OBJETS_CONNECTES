@@ -16,7 +16,7 @@ int Button::getButtonColor() {
 
 bool Button::isPressed() {
     if(digitalRead(PIN_BT_GREEN) == LOW) {
-        setButtonColor(BLUE);
+        setButtonColor(GREEN);
         _pressStartTime = millis();
         delay(50); // small delay for debounce
         if(digitalRead(PIN_BT_GREEN) == LOW) {
@@ -32,7 +32,7 @@ bool Button::isPressed() {
         }
     }
     else if(digitalRead(PIN_BT_RED) == LOW) {
-        setButtonColor(YELLOW);
+        setButtonColor(RED);
         _pressStartTime = millis();
         delay(50); // small delay for debounce
         if(digitalRead(PIN_BT_RED) == LOW) {

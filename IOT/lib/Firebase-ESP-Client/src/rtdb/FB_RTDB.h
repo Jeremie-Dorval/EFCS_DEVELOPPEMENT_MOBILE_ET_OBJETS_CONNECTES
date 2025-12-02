@@ -2722,7 +2722,7 @@ protected:
 
   template <typename T1, typename T2>
   auto dataPushHandler(FirebaseData *fbdo, T1 path, T2 value, int priority_addr, bool async) ->
-      typename enable_if<is_string<T1>::value && is_num_int<T2>::value, bool>::type
+      typename mb_string::enable_if<mb_string::is_string<T1>::value && mb_string::is_num_int<T2>::value, bool>::type
   {
     return buildRequest(fbdo, http_post, toStringPtr(path), toStringPtr(value, -1), d_integer,
                         _NO_SUB_TYPE, _NO_REF, _NO_QUERY, priority_addr, toStringPtr(_NO_ETAG), async, _NO_QUEUE,
@@ -2731,7 +2731,7 @@ protected:
 
   template <typename T1, typename T2>
   auto dataPushHandler(FirebaseData *fbdo, T1 path, T2 value, int priority_addr, bool async) ->
-      typename enable_if<is_string<T1>::value && is_bool<T2>::value, bool>::type
+      typename mb_string::enable_if<mb_string::is_string<T1>::value && mb_string::is_bool<T2>::value, bool>::type
   {
     return buildRequest(fbdo, http_post, toStringPtr(path), toStringPtr(value, -1), d_boolean,
                         _NO_SUB_TYPE, _NO_REF, _NO_QUERY, priority_addr, toStringPtr(_NO_ETAG), async, _NO_QUEUE,
@@ -2740,7 +2740,7 @@ protected:
 
   template <typename T1, typename T2>
   auto dataPushHandler(FirebaseData *fbdo, T1 path, T2 value, int priority_addr, bool async) ->
-      typename enable_if<is_string<T1>::value && is_same<T2, float>::value, bool>::type
+      typename mb_string::enable_if<mb_string::is_string<T1>::value && mb_string::is_same<T2, float>::value, bool>::type
   {
     return bbuildRequestEQ(fbdo, http_post, toStringPtr(path), toStringPtr(value, -1), d_float,
                            _NO_SUB_TYPE, _NO_REF, _NO_QUERY, priority_addr, toStringPtr(_NO_ETAG), async, _NO_QUEUE,
@@ -2749,7 +2749,7 @@ protected:
 
   template <typename T1, typename T2>
   auto dataPushHandler(FirebaseData *fbdo, T1 path, T2 value, int priority_addr, bool async) ->
-      typename enable_if<is_string<T1>::value && is_same<T2, double>::value, bool>::type
+      typename mb_string::enable_if<mb_string::is_string<T1>::value && mb_string::is_same<T2, double>::value, bool>::type
   {
     return buildRequest(fbdo, http_post, toStringPtr(path), toStringPtr(value, -1), d_double,
                         _NO_SUB_TYPE, _NO_REF, _NO_QUERY, priority_addr, toStringPtr(_NO_ETAG), async, _NO_QUEUE,
@@ -2758,7 +2758,7 @@ protected:
 
   template <typename T1, typename T2>
   auto dataPushHandler(FirebaseData *fbdo, T1 path, T2 value, int priority_addr, bool async) ->
-      typename enable_if<is_string<T1>::value && is_string<T2>::value, bool>::type
+      typename mb_string::enable_if<mb_string::is_string<T1>::value && mb_string::is_string<T2>::value, bool>::type
   {
     return buildRequest(fbdo, http_post, toStringPtr(path), toStringPtr(value), d_string,
                         _NO_SUB_TYPE, _NO_REF, _NO_QUERY, priority_addr, toStringPtr(_NO_ETAG), async,
@@ -2767,7 +2767,7 @@ protected:
 
   template <typename T1, typename T2>
   auto dataPushHandler(FirebaseData *fbdo, T1 path, T2 json, int priority_addr, bool async) ->
-      typename enable_if<is_string<T1>::value && is_same<T2, FirebaseJson *>::value, bool>::type
+      typename mb_string::enable_if<mb_string::is_string<T1>::value && mb_string::is_same<T2, FirebaseJson *>::value, bool>::type
   {
     return buildRequest(fbdo, http_post, toStringPtr(path), toStringPtr(_NO_PAYLOAD), d_json,
                         _NO_SUB_TYPE, getAddr(json), _NO_QUERY, priority_addr, toStringPtr(_NO_ETAG), async,
@@ -2776,7 +2776,7 @@ protected:
 
   template <typename T1, typename T2>
   auto dataPushHandler(FirebaseData *fbdo, T1 path, T2 arr, int priority_addr, bool async) ->
-      typename enable_if<is_string<T1>::value && is_same<T2, FirebaseJsonArray *>::value, bool>::type
+      typename mb_string::enable_if<mb_string::is_string<T1>::value && mb_string::is_same<T2, FirebaseJsonArray *>::value, bool>::type
   {
     return buildRequest(fbdo, http_post, toStringPtr(path), toStringPtr(_NO_PAYLOAD), d_array,
                         _NO_SUB_TYPE, getAddr(arr), _NO_QUERY, priority_addr, toStringPtr(_NO_ETAG), async,
@@ -2785,7 +2785,7 @@ protected:
 
   template <typename T1, typename T2>
   auto dataPushHandler(FirebaseData *fbdo, T1 path, T2 blob, size_t size, bool async) ->
-      typename enable_if<is_string<T1>::value && is_same<T2, uint8_t *>::value, bool>::type
+      typename mb_string::enable_if<mb_string::is_string<T1>::value && mb_string::is_same<T2, uint8_t *>::value, bool>::type
   {
     return buildRequest(fbdo, http_post, toStringPtr(path), toStringPtr(_NO_PAYLOAD), d_blob,
                         _NO_SUB_TYPE, toAddr(blob), _NO_QUERY, _NO_PRIORITY, toStringPtr(_NO_ETAG), async,
@@ -2794,7 +2794,7 @@ protected:
 
   template <typename T1, typename T2>
   auto dataPushHandler(FirebaseData *fbdo, T1 path, T2 filename, firebase_mem_storage_type storageType, bool async) ->
-      typename enable_if<is_string<T1>::value && is_string<T2>::value, bool>::type
+      typename mb_string::enable_if<mb_string::is_string<T1>::value && mb_string::is_string<T2>::value, bool>::type
   {
     return buildRequest(fbdo, http_post, toStringPtr(path), toStringPtr(_NO_PAYLOAD), d_file,
                         _NO_SUB_TYPE, _NO_REF, _NO_QUERY, _NO_PRIORITY, toStringPtr(_NO_ETAG), async, _NO_QUEUE,
@@ -2803,7 +2803,7 @@ protected:
 
   template <typename T1, typename T2, typename T3>
   auto dataSetHandler(FirebaseData *fbdo, T1 path, T2 value, int priority_addr, T3 etag, bool async) ->
-      typename enable_if<is_string<T1>::value && is_bool<T2>::value, bool>::type
+      typename mb_string::enable_if<mb_string::is_string<T1>::value && mb_string::is_bool<T2>::value, bool>::type
   {
     return buildRequest(fbdo, http_put, toStringPtr(path), toStringPtr(value, -1), d_boolean,
                         _NO_SUB_TYPE, _NO_REF, _NO_QUERY, priority_addr, toStringPtr(etag), async, _NO_QUEUE,
@@ -2812,7 +2812,7 @@ protected:
 
   template <typename T1, typename T2, typename T3>
   auto dataSetHandler(FirebaseData *fbdo, T1 path, T2 value, int priority_addr, T3 etag, bool async) ->
-      typename enable_if<is_string<T1>::value && is_num_int<T2>::value, bool>::type
+      typename mb_string::enable_if<mb_string::is_string<T1>::value && mb_string::is_num_int<T2>::value, bool>::type
   {
     return buildRequest(fbdo, http_put, toStringPtr(path), toStringPtr(value, -1), d_integer,
                         _NO_SUB_TYPE, _NO_REF, _NO_QUERY, priority_addr, toStringPtr(etag), async, _NO_QUEUE,
@@ -2821,7 +2821,7 @@ protected:
 
   template <typename T1, typename T2, typename T3>
   auto dataSetHandler(FirebaseData *fbdo, T1 path, T2 value, int priority_addr, T3 etag, bool async) ->
-      typename enable_if<is_string<T1>::value && is_same<T2, float>::value, bool>::type
+      typename mb_string::enable_if<mb_string::is_string<T1>::value && mb_string::is_same<T2, float>::value, bool>::type
   {
     return buildRequest(fbdo, http_put, toStringPtr(path), toStringPtr(value, -1), d_float,
                         _NO_SUB_TYPE, _NO_REF, _NO_QUERY, priority_addr, toStringPtr(etag), async, _NO_QUEUE,
@@ -2830,7 +2830,7 @@ protected:
 
   template <typename T1, typename T2, typename T3>
   auto dataSetHandler(FirebaseData *fbdo, T1 path, T2 value, int priority_addr, T3 etag, bool async) ->
-      typename enable_if<is_string<T1>::value && is_same<T2, double>::value, bool>::type
+      typename mb_string::enable_if<mb_string::is_string<T1>::value && mb_string::is_same<T2, double>::value, bool>::type
   {
     return buildRequest(fbdo, http_put, toStringPtr(path), toStringPtr(value, -1), d_double,
                         _NO_SUB_TYPE, _NO_REF, _NO_QUERY, priority_addr, toStringPtr(etag), async, _NO_QUEUE,
@@ -2839,7 +2839,7 @@ protected:
 
   template <typename T1, typename T2, typename T3>
   auto dataSetHandler(FirebaseData *fbdo, T1 path, T2 value, int priority_addr, T3 etag, bool async) ->
-      typename enable_if<is_string<T1>::value && is_string<T2>::value, bool>::type
+      typename mb_string::enable_if<mb_string::is_string<T1>::value && mb_string::is_string<T2>::value, bool>::type
   {
     return buildRequest(fbdo, http_put, toStringPtr(path), toStringPtr(value), d_string,
                         _NO_SUB_TYPE, _NO_REF, _NO_QUERY, priority_addr, toStringPtr(etag), async, _NO_QUEUE,
@@ -2848,7 +2848,7 @@ protected:
 
   template <typename T1, typename T2, typename T3>
   auto dataSetHandler(FirebaseData *fbdo, T1 path, T2 json, int priority_addr, T3 etag, bool async) ->
-      typename enable_if<is_string<T1>::value && is_same<T2, FirebaseJson *>::value, bool>::type
+      typename mb_string::enable_if<mb_string::is_string<T1>::value && mb_string::is_same<T2, FirebaseJson *>::value, bool>::type
   {
     return buildRequest(fbdo, http_put, toStringPtr(path), toStringPtr(_NO_PAYLOAD), d_json,
                         _NO_SUB_TYPE, getAddr(json), _NO_QUERY, priority_addr, toStringPtr(etag), async, _NO_QUEUE,
@@ -2857,7 +2857,7 @@ protected:
 
   template <typename T1, typename T2, typename T3>
   auto dataSetHandler(FirebaseData *fbdo, T1 path, T2 arr, int priority_addr, T3 etag, bool async) ->
-      typename enable_if<is_string<T1>::value && is_same<T2, FirebaseJsonArray *>::value, bool>::type
+      typename mb_string::enable_if<mb_string::is_string<T1>::value && mb_string::is_same<T2, FirebaseJsonArray *>::value, bool>::type
   {
     return buildRequest(fbdo, http_put, toStringPtr(path), toStringPtr(_NO_PAYLOAD), d_array,
                         _NO_SUB_TYPE, getAddr(arr), _NO_QUERY, priority_addr, toStringPtr(etag), async, _NO_QUEUE,
@@ -2866,7 +2866,7 @@ protected:
 
   template <typename T1, typename T2>
   auto dataSetHandler(FirebaseData *fbdo, T1 path, uint8_t *blob, size_t size, T2 etag, bool async) ->
-      typename enable_if<is_string<T1>::value, bool>::type
+      typename mb_string::enable_if<mb_string::is_string<T1>::value, bool>::type
   {
     return buildRequest(fbdo, http_put, toStringPtr(path), toStringPtr(_NO_PAYLOAD), d_blob,
                         _NO_SUB_TYPE, toAddr(blob), _NO_QUERY, _NO_PRIORITY, toStringPtr(etag), async, _NO_QUEUE,
@@ -2875,7 +2875,7 @@ protected:
 
   template <typename T1, typename T2, typename T3>
   auto dataSetHandler(FirebaseData *fbdo, T1 path, T2 filename, firebase_mem_storage_type storageType, T3 etag, bool async) ->
-      typename enable_if<is_string<T1>::value && is_string<T2>::value, bool>::type
+      typename mb_string::enable_if<mb_string::is_string<T1>::value && mb_string::is_string<T2>::value, bool>::type
   {
     return buildRequest(fbdo, http_put, toStringPtr(path), toStringPtr(_NO_PAYLOAD), d_file,
                         _NO_SUB_TYPE, _NO_REF, _NO_QUERY, _NO_PRIORITY, toStringPtr(etag), async, _NO_QUEUE,

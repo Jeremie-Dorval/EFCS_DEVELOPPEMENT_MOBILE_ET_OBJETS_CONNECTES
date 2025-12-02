@@ -17,3 +17,7 @@ void ManageFirebase::connexion() {
   Firebase.begin(&config, &auth);
   Firebase.reconnectWiFi(true);
 }
+
+FirebaseData& ManageFirebase::getFirebaseData() {
+    return fbdo;
+}

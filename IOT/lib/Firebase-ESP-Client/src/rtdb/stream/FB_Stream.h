@@ -186,7 +186,7 @@ public:
     void empty();
 
     template <typename T>
-    auto to() -> typename enable_if<is_num_int<T>::value || is_num_float<T>::value || is_bool<T>::value, T>::type
+    auto to() -> typename std::enable_if<is_num_int<T>::value || is_num_float<T>::value || is_bool<T>::value, T>::type
     {
         if (sif->data_type == firebase_data_type::d_string)
             setRaw(true); // if double quotes string, trim it.
@@ -222,16 +222,16 @@ public:
             return iVal.int64;
         else if (is_num_uint64<T>::value)
             return iVal.uint64;
-        else if (is_same<T, float>::value)
+        else if (mb_string::is_same<T, float>::value)
             return fVal.f;
-        else if (is_same<T, double>::value)
+        else if (mb_string::is_same<T, double>::value)
             return fVal.d;
         else
             return 0;
     }
 
     template <typename T>
-    auto to() -> typename enable_if<is_const_chars<T>::value ||
+    auto to() -> typename std::enable_if<is_const_chars<T>::value ||
                                         is_std_string<T>::value ||
                                         is_arduino_string<T>::value ||
                                         is_mb_string<T>::value,
@@ -245,7 +245,7 @@ public:
     }
 
     template <typename T>
-    auto to() -> typename enable_if<is_same<T, FirebaseJson *>::value, FirebaseJson *>::type
+    auto to() -> typename mb_string::enable_if<mb_string::is_same<T, FirebaseJson *>::value, FirebaseJson *>::type
     {
         if (!jsonPtr)
             jsonPtr = new FirebaseJson();
@@ -263,13 +263,13 @@ public:
     }
 
     template <typename T>
-    auto to() -> typename enable_if<is_same<T, FirebaseJson>::value, FirebaseJson &>::type
+    auto to() -> typename mb_string::enable_if<mb_string::is_same<T, FirebaseJson>::value, FirebaseJson &>::type
     {
         return *to<FirebaseJson *>();
     }
 
     template <typename T>
-    auto to() -> typename enable_if<is_same<T, FirebaseJsonArray *>::value, FirebaseJsonArray *>::type
+    auto to() -> typename mb_string::enable_if<mb_string::is_same<T, FirebaseJsonArray *>::value, FirebaseJsonArray *>::type
     {
         if (!arrPtr)
             arrPtr = new FirebaseJsonArray();
@@ -286,20 +286,20 @@ public:
     }
 
     template <typename T>
-    auto to() -> typename enable_if<is_same<T, FirebaseJsonArray>::value, FirebaseJsonArray &>::type
+    auto to() -> typename mb_string::enable_if<mb_string::is_same<T, FirebaseJsonArray>::value, FirebaseJsonArray &>::type
     {
         return *to<FirebaseJsonArray *>();
     }
 
     template <typename T>
-    auto to() -> typename enable_if<is_same<T, MB_VECTOR<uint8_t> *>::value, MB_VECTOR<uint8_t> *>::type
+    auto to() -> typename mb_string::enable_if<mb_string::is_same<T, MB_VECTOR<uint8_t> *>::value, MB_VECTOR<uint8_t> *>::type
     {
         return sif->blob;
     }
 
 #if defined(MBFS_FLASH_FS) && (defined(ENABLE_RTDB) || defined(FIREBASE_ENABLE_RTDB))
     template <typename T>
-    auto to() -> typename enable_if<is_same<T, fs::File>::value, fs::File>::type
+    auto to() -> typename mb_string::enable_if<mb_string::is_same<T, fs::File>::value, fs::File>::type
     {
         if (sif->data_type == firebase_data_type::d_file && Core.config)
         {

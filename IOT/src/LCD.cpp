@@ -21,14 +21,25 @@ void LCD::print(const char* message, int x, int y) {
 
 void LCD::drawMenu() {
     clear();
+
     for (int i = 0; i < MENU_SIZE; i++) {
+
+        int yOffset = i * 100;  // Décalage vertical pour chaque défi
+
         if (i == selectedItem) {
             highlightItem(i);
         } else {
             screen.setTextColor(COLOR_RGB565_WHITE, COLOR_RGB565_BLACK);
         }
-        screen.setCursor(10, 30 + i * 30);
-        screen.print(menuItems[i]);
+
+        String titre = "Défi ";
+        titre.concat(i);
+
+        print(titre.c_str(), 10, 10 + yOffset);
+        print("Challenger:", 10, 40 + yOffset);
+        print(menuItems[i].challenger.c_str(), 10, 55 + yOffset);
+        print("Sequence:", 10, 70 + yOffset);
+        print(menuItems[i].sequence.c_str(), 10, 85 + yOffset);
     }
 }
 
@@ -54,33 +65,64 @@ void LCD::moveCursorDown() {
 
 void LCD::openSelectedItem() {
     switch (selectedItem) {
-        case 0: currentMode = ScreenMode::MODE_TEMP; break;
-        case 1: currentMode = ScreenMode::MODE_HUMID; break;
-        case 2: currentMode = ScreenMode::MODE_LED; break;
+        case 0: currentMode = ScreenMode::DEFIT_1; break;
+        case 1: currentMode = ScreenMode::DEFIT_2; break;
+        case 2: currentMode = ScreenMode::DEFIT_3; break;
+        case 3: currentMode = ScreenMode::DEFIT_4; break;
+        case 4: currentMode = ScreenMode::DEFIT_5; break;
+        default: currentMode = ScreenMode::MENU; break;
     }
 
     requestRedraw();
 }
 
+void LCD::closeCurrentItem() {
+    currentMode = ScreenMode::MENU;
+    drawMenu();
+}
+
+void LCD::createMenuItems(FirestoreChallenge items[MENU_SIZE]) {
+    for (int i = 0; i < MENU_SIZE; i++) {
+        menuItems[i] = items[i];
+    }
+}
+
 void LCD::drawCurrentScreen() {
-    
+    clear();
+
+    switch (currentMode) {
+        case ScreenMode::DEFIT_1:
+            print("Defit 1 en cours...", 10, 10);
+            break;
+        case ScreenMode::DEFIT_2:
+            print("Defit 2 en cours...", 10, 10);
+            break;
+        case ScreenMode::DEFIT_3:
+            print("Defit 3 en cours...", 10, 10);
+            break;
+        case ScreenMode::DEFIT_4:
+            print("Defit 4 en cours...", 10, 10);
+            break;
+        case ScreenMode::DEFIT_5:
+            print("Defit 5 en cours...", 10, 10);
+            break;
+        default:
+            break;
+    }
 }
 
 bool LCD::handleReturnClick() {
-    if (currentMode != ScreenMode::MODE_MENU) {
-        currentMode = ScreenMode::MODE_MENU;
-        drawMenu();
+    if (currentMode != ScreenMode::MENU) {
+        closeCurrentItem();
         return true;
     }
     return false;
 }
 
 void LCD::requestRedraw() {
-    // Implémentation pour demander un redessin de l'écran
     shouldRedraw = true;
 }
 
 void LCD::highlightItem(int itemIndex) {
     screen.setTextColor(COLOR_RGB565_YELLOW, COLOR_RGB565_BLUE);
 }
-
