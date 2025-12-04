@@ -1,12 +1,15 @@
 #include "Joystick.h"
 
-void Joystick::begin() {
-    pinMode(JOY_BTN, INPUT_PULLUP);
-}
+#define DEAD_ZONE_LOW  1500
+#define DEAD_ZONE_HIGH 2600
 
-void Joystick::update() {
-    buttonState = digitalRead(JOY_BTN);
-    verticalPosition = analogRead(JOY_Y);
+void Joystick::begin() {
+    Serial.println("Initialisation du joystick...");
+    pinMode(JOY_Y, INPUT);
+    pinMode(JOY_BTN, INPUT_PULLUP);
+
+    lastButtonState = HIGH;
+    lastDirection = 0;
 }
 
 int Joystick::getVerticalPosition() {
@@ -14,15 +17,40 @@ int Joystick::getVerticalPosition() {
 }
 
 bool Joystick::isButtonPressed() {
-    return digitalRead(JOY_BTN) == LOW; // LOW si appuyé, HIGH si relâché
+    bool currentState = digitalRead(JOY_BTN);
+    bool clicked = false;
+
+    if (currentState == LOW && lastButtonState == HIGH) {
+        clicked = true;
+    }
+
+    lastButtonState = currentState;
+    return clicked;
 }
 
 bool Joystick::isUpPressed() {
-    verticalPosition = getVerticalPosition();
-    return verticalPosition < (512 - threshold); // Seuil pour détecter le mouvement vers le haut
+    if (getVerticalPosition() < DEAD_ZONE_LOW && lastDirection != -1) {
+        lastDirection = -1;
+        return true;
+    }
+
+    if (getVerticalPosition() >= DEAD_ZONE_LOW && getVerticalPosition() <= DEAD_ZONE_HIGH) {
+        lastDirection = 1;
+        return false;
+    }
+    return false;
 }
 
 bool Joystick::isDownPressed() {
-    verticalPosition = getVerticalPosition();
-    return verticalPosition > (512 + threshold); // Seuil pour détecter le mouvement vers le bas
+    if (getVerticalPosition() > DEAD_ZONE_HIGH && lastDirection != 1) {
+        lastDirection = 1;
+        return true;
+    }
+
+    if (getVerticalPosition() >= DEAD_ZONE_LOW && getVerticalPosition() <= DEAD_ZONE_HIGH) {
+        lastDirection = 0;
+        return false;
+    }
+    
+    return false;
 }

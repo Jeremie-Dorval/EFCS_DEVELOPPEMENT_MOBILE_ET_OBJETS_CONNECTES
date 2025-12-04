@@ -4,14 +4,17 @@
 class Joystick {
     public:
         void begin();
-        void update();
         int getVerticalPosition();
         bool isButtonPressed();
         bool isUpPressed();
         bool isDownPressed();
 
     private:
-        const int threshold = 100; // Seuil pour détecter le mouvement
+        #define DEAD_ZONE_LOW  1500
+        #define DEAD_ZONE_HIGH 2600
+
         int verticalPosition;
-        int buttonState;
+        bool buttonState = false;
+        bool lastButtonState;
+        int lastDirection;
 };

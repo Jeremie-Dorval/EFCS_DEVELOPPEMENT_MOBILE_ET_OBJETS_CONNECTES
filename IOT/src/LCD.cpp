@@ -3,6 +3,7 @@
 DFRobot_ST7789_240x320_HW_SPI screen(TFT_DC, TFT_CS, TFT_RST);
 
 void LCD::begin() {
+    Serial.println("Initialisation de l'écran LCD...");
     screen.begin();
     screen.fillScreen(COLOR_RGB565_BLACK);
     screen.setTextSize(2);
@@ -24,7 +25,7 @@ void LCD::drawMenu() {
 
     for (int i = 0; i < MENU_SIZE; i++) {
 
-        int yOffset = i * 100;  // Décalage vertical pour chaque défi
+        int yOffset = i * 100;
 
         if (i == selectedItem) {
             highlightItem(i);
@@ -32,14 +33,18 @@ void LCD::drawMenu() {
             screen.setTextColor(COLOR_RGB565_WHITE, COLOR_RGB565_BLACK);
         }
 
-        String titre = "Défi ";
+        String titre = "Defi ";
         titre.concat(i);
 
-        print(titre.c_str(), 10, 10 + yOffset);
-        print("Challenger:", 10, 40 + yOffset);
-        print(menuItems[i].challenger.c_str(), 10, 55 + yOffset);
-        print("Sequence:", 10, 70 + yOffset);
-        print(menuItems[i].sequence.c_str(), 10, 85 + yOffset);
+        print(titre.c_str(), ITEM_X_START, ITEM_Y_START + yOffset);
+        print("Challenger:", ITEM_X_START, ITEM_Y_2 + yOffset);
+        print(menuItems[i].challenger.c_str(), ITEM_X_END, ITEM_Y_2 + yOffset);
+        print("Sequence:", ITEM_X_START, ITEM_Y_3 + yOffset);
+        print(String(menuItems[i].sequence.length()).c_str(), ITEM_X_END, ITEM_Y_3 + yOffset);
+
+        if (menuItems[i + 1].challenger == "") {
+            break;
+        }
     }
 }
 
@@ -92,19 +97,19 @@ void LCD::drawCurrentScreen() {
 
     switch (currentMode) {
         case ScreenMode::DEFIT_1:
-            print("Defit 1 en cours...", 10, 10);
+            print("Defit 1 en cours...", ITEM_X_START, ITEM_Y_START);
             break;
         case ScreenMode::DEFIT_2:
-            print("Defit 2 en cours...", 10, 10);
+            print("Defit 2 en cours...", ITEM_X_START, ITEM_Y_START);
             break;
         case ScreenMode::DEFIT_3:
-            print("Defit 3 en cours...", 10, 10);
+            print("Defit 3 en cours...", ITEM_X_START, ITEM_Y_START);
             break;
         case ScreenMode::DEFIT_4:
-            print("Defit 4 en cours...", 10, 10);
+            print("Defit 4 en cours...", ITEM_X_START, ITEM_Y_START);
             break;
         case ScreenMode::DEFIT_5:
-            print("Defit 5 en cours...", 10, 10);
+            print("Defit 5 en cours...", ITEM_X_START, ITEM_Y_START);
             break;
         default:
             break;

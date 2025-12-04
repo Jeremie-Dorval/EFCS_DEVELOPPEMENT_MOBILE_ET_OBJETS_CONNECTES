@@ -9,6 +9,7 @@ LED led;
 Button button;
 
 void Game::init() {
+  Serial.println("Initialisation du jeu...");
   led.begin();
   button.begin();
   record = 0;

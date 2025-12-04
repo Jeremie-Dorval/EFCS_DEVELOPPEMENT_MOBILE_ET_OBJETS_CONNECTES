@@ -29,6 +29,12 @@ class LCD {
         void requestRedraw();
         
     private:
+        #define ITEM_X_START 10
+        #define ITEM_X_END 150
+        #define ITEM_Y_START 10
+        #define ITEM_Y_2 40
+        #define ITEM_Y_3 70
+
         FirestoreChallenge menuItems[MENU_SIZE] = {};
 
         int selectedItem = 0;

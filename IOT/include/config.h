@@ -5,7 +5,7 @@
 
 #define PIN_BT_GREEN 17
 #define PIN_BT_WHITE 16
-#define PIN_BT_RED 15
+#define PIN_BT_RED 27
 
 #define PIN_LED_GREEN 26
 #define PIN_LED_WHITE 19
