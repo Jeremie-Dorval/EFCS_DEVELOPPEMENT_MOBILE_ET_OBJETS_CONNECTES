@@ -10,15 +10,18 @@ import {
   updatePassword,
   type User as FirebaseUser,
 } from "firebase/auth";
-import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
+import { doc, getDoc, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { Alert } from "react-native";
 
 export interface AppUser {
-  id: string;
+  userId: string;        // ID Firebase (anciennement 'id')
+  pseudonyme: string;    // Pseudonyme unique
   firstName: string;
   lastName: string;
   email: string;
+  points: number;        // Points accumulés
+  winStreak: number;     // Série de victoires consécutives
   createdAt?: any;
 }
 
@@ -32,18 +35,26 @@ type AuthCtx = {
   isAuthenticated: boolean | undefined;
   avatarUri: string | null;
   login: (email: string, password: string) => Promise<Result>;
-  register: (email: string, password: string, firstName: string, lastName: string) => Promise<Result>;
+  register: (
+    email: string,
+    password: string,
+    firstName: string,
+    lastName: string,
+    pseudonyme: string
+  ) => Promise<Result>;
   logout: () => Promise<void>;
   loadAvatar: () => Promise<void>;
   setAvatar: (uri: string | null) => Promise<void>;
   changePassword: (current: string, next: string) => Promise<Result>;
+  refreshUser: () => Promise<void>;
+  updateUserPoints: (newPoints: number) => Promise<void>;
 };
 
 const Ctx = createContext<AuthCtx | null>(null);
 
 const avatarKey = (uid: string) => `avatar:${uid}`;
 
-export const AuthContextProvider: React.FC<React.PropsWithChildren> = ({ children }) => { //PropsWithChildren in React Native (and React in general) is a utility type provided by TypeScript that simplifies the typing of components that accept children. https://www.dhiwise.com/post/understanding-react-propswithchildren-a-comprehensive-guide
+export const AuthContextProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
   const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(null);
   const [appUser, setAppUser] = useState<AppUser | null>(null);
   const [avatarUri, setAvatarUri] = useState<string | null>(null);
@@ -53,6 +64,27 @@ export const AuthContextProvider: React.FC<React.PropsWithChildren> = ({ childre
     if (!auth.currentUser) return;
     const uri = await AsyncStorage.getItem(avatarKey(auth.currentUser.uid));
     setAvatarUri(uri);
+  };
+
+  const loadUserData = async (uid: string, email: string | null) => {
+    const ref = doc(db, "users", uid);
+    const snap = await getDoc(ref);
+    if (snap.exists()) {
+      const data = snap.data();
+      const user: AppUser = {
+        userId: data.userId ?? uid,
+        pseudonyme: data.pseudonyme ?? "",
+        firstName: data.firstName ?? "",
+        lastName: data.lastName ?? "",
+        email: data.email ?? email ?? "",
+        points: data.points ?? 0,
+        winStreak: data.winStreak ?? 0,
+        createdAt: data.createdAt,
+      };
+      setAppUser(user);
+      return user;
+    }
+    return null;
   };
 
   useEffect(() => {
@@ -65,19 +97,19 @@ export const AuthContextProvider: React.FC<React.PropsWithChildren> = ({ childre
         return;
       }
       try {
-        const ref = doc(db, "users", fbUser.uid);
-        const snap = await getDoc(ref);
-        if (snap.exists()) {
-          setAppUser(snap.data() as AppUser);
-        } else {
+        const user = await loadUserData(fbUser.uid, fbUser.email);
+        if (!user) {
           const minimal: AppUser = {
-            id: fbUser.uid,
+            userId: fbUser.uid,
+            pseudonyme: "",
             firstName: "",
             lastName: "",
             email: fbUser.email ?? "",
+            points: 0,
+            winStreak: 0,
             createdAt: serverTimestamp(),
           };
-          await setDoc(ref, minimal);
+          await setDoc(doc(db, "users", fbUser.uid), minimal);
           setAppUser(minimal);
         }
         await loadAvatar();
@@ -104,18 +136,22 @@ export const AuthContextProvider: React.FC<React.PropsWithChildren> = ({ childre
     email: string,
     password: string,
     firstName: string,
-    lastName: string
+    lastName: string,
+    pseudonyme: string
   ): Promise<Result> => {
     try {
       const cred = await createUserWithEmailAndPassword(auth, email, password);
       const u: AppUser = {
-        id: cred.user.uid,
+        userId: cred.user.uid,
+        pseudonyme,
         firstName,
         lastName,
         email,
+        points: 0,
+        winStreak: 0,
         createdAt: serverTimestamp(),
       };
-      await setDoc(doc(db, "users", u.id), u);
+      await setDoc(doc(db, "users", u.userId), u);
       return { ok: true };
     } catch (e: any) {
       return { ok: false, error: e?.message ?? "Inscription échouée" };
@@ -150,6 +186,22 @@ export const AuthContextProvider: React.FC<React.PropsWithChildren> = ({ childre
     }
   };
 
+  const refreshUser = async () => {
+    if (!auth.currentUser) return;
+    await loadUserData(auth.currentUser.uid, auth.currentUser.email);
+  };
+
+  const updateUserPoints = async (newPoints: number) => {
+    if (!auth.currentUser || !appUser) return;
+    try {
+      const ref = doc(db, "users", auth.currentUser.uid);
+      await updateDoc(ref, { points: newPoints });
+      setAppUser({ ...appUser, points: newPoints });
+    } catch (e) {
+      console.error("Erreur mise à jour des points:", e);
+    }
+  };
+
   const value = useMemo<AuthCtx>(
     () => ({
       firebaseUser,
@@ -162,6 +214,8 @@ export const AuthContextProvider: React.FC<React.PropsWithChildren> = ({ childre
       loadAvatar,
       setAvatar,
       changePassword,
+      refreshUser,
+      updateUserPoints,
     }),
     [firebaseUser, appUser, isAuthenticated, avatarUri]
   );

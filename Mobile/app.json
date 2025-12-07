@@ -1,12 +1,12 @@
 {
   "expo": {
-    "name": "Exercice02_States-app",
-    "slug": "Exercice02_States-app",
+    "name": "Jeu de Mémoire",
+    "slug": "jeu-de-memoire",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "exercice02statesapp",
-    "userInterfaceStyle": "automatic",
+    "scheme": "jeu-de-memoire",
+    "userInterfaceStyle": "dark",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true
@@ -14,7 +14,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#0F172A"
       },
       "edgeToEdgeEnabled": true,
       "permissions": [
@@ -36,7 +36,7 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#0F172A"
         }
       ]
     ],

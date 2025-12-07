@@ -1,18 +1,21 @@
-import { useAuth } from "@/app/context/AuthContext";
+import { useAuth } from "@/app/_context/AuthContext";
+import { getUserRank } from "@/app/_services/firestore";
+import { COLORS, GRADIENTS, SPACING, BORDER_RADIUS, FONT_SIZE, FONT_WEIGHT, SHADOWS } from "@/app/_styles/theme";
+import { Ionicons } from "@expo/vector-icons";
 import { useHeaderHeight } from "@react-navigation/elements";
 import * as ImagePicker from "expo-image-picker";
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Alert,
   Image,
   KeyboardAvoidingView,
   Platform,
-  Pressable,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
+  TouchableOpacity,
   View,
 } from "react-native";
 
@@ -21,7 +24,7 @@ async function ensureGalleryPermission(): Promise<boolean> {
   if (current.granted || current.accessPrivileges === "limited") return true;
   const req = await ImagePicker.requestMediaLibraryPermissionsAsync();
   if (req.granted || req.accessPrivileges === "limited") return true;
-  Alert.alert("Permission requise", "L’accès à la galerie est nécessaire pour choisir une photo.");
+  Alert.alert("Permission requise", "L'accès à la galerie est nécessaire pour choisir une photo.");
   return false;
 }
 
@@ -30,58 +33,31 @@ async function ensureCameraPermission(): Promise<boolean> {
   if (current.granted) return true;
   const req = await ImagePicker.requestCameraPermissionsAsync();
   if (req.granted) return true;
-  Alert.alert("Permission requise", "L’accès à la caméra est nécessaire pour prendre une photo.");
+  Alert.alert("Permission requise", "L'accès à la caméra est nécessaire pour prendre une photo.");
   return false;
 }
 
-type FieldProps = React.ComponentProps<typeof TextInput> & {
-  label: string;
-  icon?: string;
-};
-
-function Field({ label, icon, style, ...rest }: FieldProps) {
-  const [focused, setFocused] = useState(false);
-  const active = focused;
-
-  // readonly pour satisfaire le typage expo-linear-gradient; proposer par chatgpt: prompt "in a react native project using typescript, how to fix this error: Type '{ colors: readonly string[]; start: { x: number; y: number; }; end: { x: number; y: number; }; style: StyleProp<ViewStyle>; }' is not assignable to type 'IntrinsicAttributes & LinearGradientProps & { children?: ReactNode; }'."
-  const colors = active
-    ? (["#4f7fd9", "#01C885"] as const)
-    : (["#E7ECF7", "#F2F5FC"] as const);
-
-  return (
-    <View style={{ marginBottom: 12 }}>
-      <Text style={styles.label}>{label}</Text>
-      <LinearGradient colors={colors} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.fieldWrap}>
-        <View style={styles.fieldInner}>
-          {icon ? <Text style={styles.fieldIcon}>{icon}</Text> : null}
-          <TextInput
-            {...rest}
-            style={[styles.input, style]}
-            placeholderTextColor="#6B7280"
-            selectionColor="#4f7fd9"
-            cursorColor="#4f7fd9"
-            onFocus={(e) => {
-              setFocused(true);
-              rest.onFocus?.(e);
-            }}
-            onBlur={(e) => {
-              setFocused(false);
-              rest.onBlur?.(e);
-            }}
-          />
-        </View>
-      </LinearGradient>
-    </View>
-  );
-}
-
 export default function Profil() {
-  const { appUser, avatarUri, setAvatar, changePassword } = useAuth();
+  const { appUser, avatarUri, setAvatar, changePassword, refreshUser } = useAuth();
   const [current, setCurrent] = useState("");
   const [next, setNext] = useState("");
   const [confirm, setConfirm] = useState("");
+  const [showPasswords, setShowPasswords] = useState(false);
+  const [rank, setRank] = useState<number>(-1);
+  const [loading, setLoading] = useState(false);
 
   const headerHeight = useHeaderHeight();
+
+  useEffect(() => {
+    const loadRank = async () => {
+      if (appUser?.userId) {
+        const userRank = await getUserRank(appUser.userId);
+        setRank(userRank);
+      }
+    };
+    loadRank();
+    refreshUser?.();
+  }, [appUser?.userId]);
 
   const pickFromGallery = async () => {
     const ok = await ensureGalleryPermission();
@@ -101,179 +77,379 @@ export default function Profil() {
   };
 
   const onChangePwd = async () => {
-    if (!next || next !== confirm) {
+    if (!current) {
+      Alert.alert("Erreur", "Veuillez entrer votre mot de passe actuel.");
+      return;
+    }
+    if (!next || next.length < 6) {
+      Alert.alert("Erreur", "Le nouveau mot de passe doit contenir au moins 6 caractères.");
+      return;
+    }
+    if (next !== confirm) {
       Alert.alert("Erreur", "Les nouveaux mots de passe ne correspondent pas.");
       return;
     }
+
+    setLoading(true);
     const res = await changePassword(current, next);
-    if (!res.ok) Alert.alert("Erreur", res.error ?? "Impossible de changer le mot de passe");
-    else Alert.alert("OK", "Mot de passe modifié.");
+    setLoading(false);
+
+    if (!res.ok) {
+      Alert.alert("Erreur", res.error ?? "Impossible de changer le mot de passe");
+    } else {
+      Alert.alert("Succès", "Mot de passe modifié avec succès.");
+      setCurrent("");
+      setNext("");
+      setConfirm("");
+    }
   };
 
   return (
-    <KeyboardAvoidingView //https://reactnative.dev/docs/keyboardavoidingview (très pratique!!)
-      style={{ flex: 1 }}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={Platform.select({ ios: headerHeight, android: headerHeight + 24 }) as number}
-    >
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
-        {/* Bannière */}
-        <LinearGradient
-          colors={["#1f005c", "#5b0060", "#870160", "#ac255e", "#ca485c"] as const}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.banner}
+    <LinearGradient colors={[COLORS.BACKGROUND, '#1a1a2e']} style={styles.container}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.select({ ios: headerHeight, android: headerHeight + 24 }) as number}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
         >
-          <View style={styles.avatarRing}>
-            {avatarUri ? (
-              <Image source={{ uri: avatarUri }} style={styles.avatar} />
-            ) : (
-              <View
-                style={[
-                  styles.avatar,
-                  {
-                    backgroundColor: "#fff",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderWidth: 1,
-                    borderColor: "rgba(0,0,0,0.08)",
-                  },
-                ]}
-              >
-                <Text style={{ fontSize: 42 }}>👤</Text>
+          <LinearGradient
+            colors={GRADIENTS.HEADER}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.banner}
+          >
+            <View style={styles.avatarContainer}>
+              {avatarUri ? (
+                <Image source={{ uri: avatarUri }} style={styles.avatar} />
+              ) : (
+                <LinearGradient colors={GRADIENTS.BUTTON} style={styles.avatarPlaceholder}>
+                  <Text style={styles.avatarInitial}>
+                    {appUser?.pseudonyme?.charAt(0).toUpperCase() || "?"}
+                  </Text>
+                </LinearGradient>
+              )}
+              <TouchableOpacity style={styles.avatarEditButton} onPress={pickFromGallery}>
+                <Ionicons name="camera" size={16} color={COLORS.TEXT_PRIMARY} />
+              </TouchableOpacity>
+            </View>
+
+            <Text style={styles.pseudonyme}>{appUser?.pseudonyme}</Text>
+            <Text style={styles.fullName}>
+              {appUser?.firstName} {appUser?.lastName}
+            </Text>
+            <Text style={styles.email}>{appUser?.email}</Text>
+
+            <View style={styles.avatarButtons}>
+              <TouchableOpacity style={styles.avatarBtn} onPress={pickFromGallery}>
+                <Ionicons name="images" size={18} color={COLORS.TEXT_PRIMARY} />
+                <Text style={styles.avatarBtnText}>Galerie</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.avatarBtn} onPress={takePhoto}>
+                <Ionicons name="camera" size={18} color={COLORS.TEXT_PRIMARY} />
+                <Text style={styles.avatarBtnText}>Photo</Text>
+              </TouchableOpacity>
+            </View>
+          </LinearGradient>
+
+          <View style={styles.statsContainer}>
+            <View style={styles.statItem}>
+              <Ionicons name="trophy" size={24} color={COLORS.WARNING} />
+              <Text style={styles.statValue}>{appUser?.points || 0}</Text>
+              <Text style={styles.statLabel}>Points</Text>
+            </View>
+            <View style={styles.statDivider} />
+            <View style={styles.statItem}>
+              <Ionicons name="podium" size={24} color={COLORS.PRIMARY} />
+              <Text style={styles.statValue}>
+                {rank > 0 ? `#${rank}` : "-"}
+              </Text>
+              <Text style={styles.statLabel}>Classement</Text>
+            </View>
+            <View style={styles.statDivider} />
+            <View style={styles.statItem}>
+              <Ionicons name="flame" size={24} color={COLORS.DANGER} />
+              <Text style={styles.statValue}>{appUser?.winStreak || 0}</Text>
+              <Text style={styles.statLabel}>Série</Text>
+            </View>
+          </View>
+
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <Ionicons name="lock-closed" size={20} color={COLORS.PRIMARY} />
+              <Text style={styles.sectionTitle}>Changer le mot de passe</Text>
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Mot de passe actuel</Text>
+              <View style={styles.inputContainer}>
+                <Ionicons name="key" size={20} color={COLORS.TEXT_SECONDARY} />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Votre mot de passe actuel"
+                  placeholderTextColor={COLORS.TEXT_MUTED}
+                  secureTextEntry={!showPasswords}
+                  value={current}
+                  onChangeText={setCurrent}
+                  autoCapitalize="none"
+                />
               </View>
-            )}
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Nouveau mot de passe</Text>
+              <View style={styles.inputContainer}>
+                <Ionicons name="lock-closed" size={20} color={COLORS.TEXT_SECONDARY} />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Minimum 6 caractères"
+                  placeholderTextColor={COLORS.TEXT_MUTED}
+                  secureTextEntry={!showPasswords}
+                  value={next}
+                  onChangeText={setNext}
+                  autoCapitalize="none"
+                />
+              </View>
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Confirmer le nouveau</Text>
+              <View style={styles.inputContainer}>
+                <Ionicons name="checkmark-circle" size={20} color={COLORS.TEXT_SECONDARY} />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Confirmez le nouveau mot de passe"
+                  placeholderTextColor={COLORS.TEXT_MUTED}
+                  secureTextEntry={!showPasswords}
+                  value={confirm}
+                  onChangeText={setConfirm}
+                  autoCapitalize="none"
+                />
+              </View>
+            </View>
+
+            <TouchableOpacity
+              style={styles.showPasswordButton}
+              onPress={() => setShowPasswords(!showPasswords)}
+            >
+              <Ionicons
+                name={showPasswords ? "eye-off" : "eye"}
+                size={18}
+                color={COLORS.TEXT_SECONDARY}
+              />
+              <Text style={styles.showPasswordText}>
+                {showPasswords ? "Masquer" : "Afficher"} les mots de passe
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={onChangePwd}
+              disabled={loading}
+              activeOpacity={0.8}
+            >
+              <LinearGradient
+                colors={GRADIENTS.BUTTON_SUCCESS}
+                style={[styles.submitButton, loading && styles.submitButtonDisabled]}
+              >
+                <Ionicons name="checkmark" size={20} color={COLORS.TEXT_PRIMARY} />
+                <Text style={styles.submitButtonText}>
+                  {loading ? "Modification..." : "Valider le changement"}
+                </Text>
+              </LinearGradient>
+            </TouchableOpacity>
           </View>
-          <Text style={styles.name}>
-            {appUser?.firstName} {appUser?.lastName}
-          </Text>
-          <Text style={styles.mail}>{appUser?.email}</Text>
-
-          <View style={{ flexDirection: "row", gap: 10, marginTop: 12 }}>
-            <Pressable style={[styles.btn, { backgroundColor: "#4f7fd9" }]} onPress={pickFromGallery}>
-              <Text style={styles.btnTxt}>Depuis la galerie</Text>
-            </Pressable>
-            <Pressable style={[styles.btn, { backgroundColor: "#01C885" }]} onPress={takePhoto}>
-              <Text style={styles.btnTxt}>Prendre une photo</Text>
-            </Pressable>
-          </View>
-        </LinearGradient>
-
-        {/* Formulaire */}
-        <View style={{ flex: 1, padding: 16 }}>
-          <Text style={{ fontWeight: "900", fontSize: 18, marginBottom: 8 }}>Changer le mot de passe</Text>
-
-          <Field                                             /*******Les emoji sont trop quetaine ? peut etre les enlever********/
-            label="Mot de passe actuel"
-            icon="🔒"
-            placeholder="Votre mot de passe actuel"
-            secureTextEntry
-            value={current}
-            onChangeText={setCurrent}
-            autoCapitalize="none"
-            autoCorrect={false}
-          />
-          <Field
-            label="Nouveau mot de passe"
-            icon="✨"
-            placeholder="Nouveau mot de passe"
-            secureTextEntry
-            value={next}
-            onChangeText={setNext}
-            autoCapitalize="none"
-            autoCorrect={false}
-          />
-          <Field
-            label="Confirmer le nouveau"
-            icon="✅"
-            placeholder="Confirmez le nouveau mot de passe"
-            secureTextEntry
-            value={confirm}
-            onChangeText={setConfirm}
-            autoCapitalize="none"
-            autoCorrect={false}
-          />
-
-          <Pressable onPress={onChangePwd} style={[styles.bigBtn, { backgroundColor: "#0a7" }]}>
-            <Text style={styles.bigBtnTxt}>Valider</Text>
-          </Pressable>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingBottom: 100,
+  },
   banner: {
-    paddingTop: 24,
-    paddingBottom: 16,
-    paddingHorizontal: 16,
+    paddingTop: SPACING.LG,
+    paddingBottom: SPACING.LG,
+    paddingHorizontal: SPACING.MD,
     alignItems: "center",
-    ...Platform.select({ //proposer par chatgpt prompt: "ajoute une ombre légère sous une carte"
-      ios: { shadowColor: "#000", shadowOpacity: 0.2, shadowRadius: 12, shadowOffset: { width: 0, height: 6 } },
-      android: { elevation: 8 },
-    }),
+    ...SHADOWS.LG,
   },
-  avatarRing: {
-    width: 112,
-    height: 112,
-    borderRadius: 56,
-    padding: 3,
-    backgroundColor: "transparent",
-    overflow: "hidden",
+  avatarContainer: {
+    position: "relative",
+    marginBottom: SPACING.MD,
   },
-  avatar: { width: "100%", height: "100%", borderRadius: 56 },
-  name: { marginTop: 10, fontWeight: "900", fontSize: 20, color: "#fff" },
-  mail: { color: "rgba(255,255,255,0.85)" },
-
-  label: {
-    fontWeight: "800",
-    marginBottom: 6,
-    color: "#1f2937",
+  avatar: {
+    width: 100,
+    height: 100,
+    borderRadius: BORDER_RADIUS.FULL,
+    borderWidth: 3,
+    borderColor: COLORS.TEXT_PRIMARY,
   },
-  fieldWrap: {
-    borderRadius: 14,
-    padding: 1.5,
+  avatarPlaceholder: {
+    width: 100,
+    height: 100,
+    borderRadius: BORDER_RADIUS.FULL,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 3,
+    borderColor: COLORS.TEXT_PRIMARY,
   },
-  fieldInner: {
-    borderRadius: 13,
-    backgroundColor: "#ffffff",
-    paddingHorizontal: 14,
-    paddingVertical: 12,
+  avatarInitial: {
+    fontSize: 40,
+    fontWeight: FONT_WEIGHT.BOLD,
+    color: COLORS.TEXT_PRIMARY,
+  },
+  avatarEditButton: {
+    position: "absolute",
+    bottom: 0,
+    right: 0,
+    backgroundColor: COLORS.PRIMARY,
+    padding: SPACING.SM,
+    borderRadius: BORDER_RADIUS.FULL,
+    ...SHADOWS.SM,
+  },
+  pseudonyme: {
+    fontSize: FONT_SIZE.TITLE,
+    fontWeight: FONT_WEIGHT.BOLD,
+    color: COLORS.TEXT_PRIMARY,
+  },
+  fullName: {
+    fontSize: FONT_SIZE.MD,
+    color: COLORS.TEXT_PRIMARY,
+    opacity: 0.9,
+    marginTop: SPACING.XS,
+  },
+  email: {
+    fontSize: FONT_SIZE.SM,
+    color: COLORS.TEXT_PRIMARY,
+    opacity: 0.7,
+    marginTop: SPACING.XS,
+  },
+  avatarButtons: {
+    flexDirection: "row",
+    gap: SPACING.MD,
+    marginTop: SPACING.MD,
+  },
+  avatarBtn: {
     flexDirection: "row",
     alignItems: "center",
-    ...Platform.select({ //proposer par chatgpt: prompt "in a react native project using typescript, how to add a light shadow under a card"
-      ios: { shadowColor: "#000", shadowOpacity: 0.06, shadowRadius: 6, shadowOffset: { width: 0, height: 3 } },
-      android: { elevation: 2 },
-    }),
+    gap: SPACING.XS,
+    backgroundColor: "rgba(255,255,255,0.2)",
+    paddingVertical: SPACING.SM,
+    paddingHorizontal: SPACING.MD,
+    borderRadius: BORDER_RADIUS.MD,
   },
-  fieldIcon: {
-    marginRight: 8,
-    fontSize: 16,
+  avatarBtnText: {
+    color: COLORS.TEXT_PRIMARY,
+    fontSize: FONT_SIZE.SM,
+    fontWeight: FONT_WEIGHT.SEMIBOLD,
+  },
+  statsContainer: {
+    flexDirection: "row",
+    backgroundColor: COLORS.SURFACE,
+    marginHorizontal: SPACING.MD,
+    marginTop: -SPACING.LG,
+    borderRadius: BORDER_RADIUS.LG,
+    padding: SPACING.MD,
+    ...SHADOWS.MD,
+  },
+  statItem: {
+    flex: 1,
+    alignItems: "center",
+    gap: SPACING.XS,
+  },
+  statValue: {
+    fontSize: FONT_SIZE.XL,
+    fontWeight: FONT_WEIGHT.BOLD,
+    color: COLORS.TEXT_PRIMARY,
+  },
+  statLabel: {
+    fontSize: FONT_SIZE.XS,
+    color: COLORS.TEXT_SECONDARY,
+  },
+  statDivider: {
+    width: 1,
+    backgroundColor: COLORS.BORDER,
+    marginVertical: SPACING.SM,
+  },
+  section: {
+    margin: SPACING.MD,
+    marginTop: SPACING.LG,
+    backgroundColor: COLORS.SURFACE,
+    borderRadius: BORDER_RADIUS.LG,
+    padding: SPACING.MD,
+    ...SHADOWS.MD,
+  },
+  sectionHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: SPACING.SM,
+    marginBottom: SPACING.MD,
+  },
+  sectionTitle: {
+    fontSize: FONT_SIZE.LG,
+    fontWeight: FONT_WEIGHT.BOLD,
+    color: COLORS.TEXT_PRIMARY,
+  },
+  inputGroup: {
+    marginBottom: SPACING.MD,
+  },
+  inputLabel: {
+    fontSize: FONT_SIZE.SM,
+    fontWeight: FONT_WEIGHT.MEDIUM,
+    color: COLORS.TEXT_SECONDARY,
+    marginBottom: SPACING.XS,
+    marginLeft: SPACING.XS,
+  },
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: COLORS.BACKGROUND,
+    borderWidth: 1,
+    borderColor: COLORS.BORDER,
+    borderRadius: BORDER_RADIUS.MD,
+    paddingHorizontal: SPACING.MD,
+    gap: SPACING.SM,
   },
   input: {
     flex: 1,
-    fontSize: 17,
-    color: "#111827",
-    fontWeight: "600",
-    letterSpacing: 0.2,
-    paddingVertical: Platform.select({ ios: 6, android: 2 }) as number, //proposer par chatgpt: prompt "in a react native project using typescript, how to vertically center text in a TextInput"
+    paddingVertical: SPACING.MD,
+    color: COLORS.TEXT_PRIMARY,
+    fontSize: FONT_SIZE.MD,
   },
 
-  btn: {
-    flex: 1,
-    height: 40,
-    borderRadius: 10,
+  showPasswordButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: SPACING.SM,
+    marginBottom: SPACING.MD,
+  },
+  showPasswordText: {
+    fontSize: FONT_SIZE.SM,
+    color: COLORS.TEXT_SECONDARY,
+  },
+  submitButton: {
+    flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
+    gap: SPACING.SM,
+    paddingVertical: SPACING.MD,
+    borderRadius: BORDER_RADIUS.MD,
+    ...SHADOWS.MD,
   },
-  btnTxt: { color: "#fff", fontWeight: "800" },
-  bigBtn: {
-    height: 48,
-    borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 8,
+  submitButtonDisabled: {
+    opacity: 0.7,
   },
-  bigBtnTxt: { color: "#fff", fontWeight: "800", letterSpacing: 0.3 },
+  submitButtonText: {
+    fontSize: FONT_SIZE.MD,
+    fontWeight: FONT_WEIGHT.BOLD,
+    color: COLORS.TEXT_PRIMARY,
+  },
 });
