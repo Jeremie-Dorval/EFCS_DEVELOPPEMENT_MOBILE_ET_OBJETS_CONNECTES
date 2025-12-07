@@ -38,6 +38,7 @@ class LCD {
         FirestoreChallenge menuItems[MENU_SIZE] = {};
 
         int selectedItem = 0;
+        int itemCount = 0;  // Nombre réel d'items chargés
         bool shouldRedraw = true;
 
         ScreenMode currentMode = ScreenMode::MENU;

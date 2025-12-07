@@ -18,7 +18,8 @@ void Game::init() {
 }
 
 void Game::playSequence() {
-  for (int color : sequence) {
+  for (int i = 0; i < sequence.length(); i++) {
+    int color = sequence[i] - '0';  // Convertir char '1','2','3' en int 1,2,3
     led.ledOn(color);
     delay(500);
     led.ledOff(color);
@@ -31,24 +32,32 @@ void Game::setSequence(const String seq) {
 }
 
 bool Game::playerTurn() {
-  for(int i = 0; i < sequence.length(); i++) {
+  const unsigned long TIMEOUT = 10000;  // 10 secondes de timeout
 
+  for(int i = 0; i < sequence.length(); i++) {
+    int expectedColor = sequence[i] - '0';  // Convertir char en int
+
+    // Attendre qu'un bouton soit pressé (avec timeout)
+    unsigned long startTime = millis();
     while(!button.isPressed()) {
+      if (millis() - startTime > TIMEOUT) {
+        return false;  // Timeout - échec
+      }
       delay(10);
     }
 
-    if(button.isPressed()) {
-      if(button.sameColor(sequence[i])) {
-        upRecord();
-        led.ledOn(sequence[i]);
-        delay(500);
-        led.ledOff(sequence[i]);
-      }
-      else {
-        return false;
-      }
+    // Vérifier si la couleur correspond (button.isPressed() a déjà enregistré la couleur)
+    if(button.sameColor(expectedColor)) {
+      upRecord();
+      led.ledOn(expectedColor);
+      delay(500);
+      led.ledOff(expectedColor);
+    }
+    else {
+      return false;
     }
 
+    // Attendre que le bouton soit relâché
     while(button.isPressed()) {
       delay(10);
     }

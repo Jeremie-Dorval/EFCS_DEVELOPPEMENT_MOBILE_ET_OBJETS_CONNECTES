@@ -1,7 +1,6 @@
 #include "Joystick.h"
 
-#define DEAD_ZONE_LOW  1500
-#define DEAD_ZONE_HIGH 2600
+// DEAD_ZONE_LOW et DEAD_ZONE_HIGH définis dans Joystick.h
 
 void Joystick::begin() {
     Serial.println("Initialisation du joystick...");
@@ -29,28 +28,31 @@ bool Joystick::isButtonPressed() {
 }
 
 bool Joystick::isUpPressed() {
-    if (getVerticalPosition() < DEAD_ZONE_LOW && lastDirection != -1) {
+    int pos = getVerticalPosition();
+
+    if (pos < DEAD_ZONE_LOW && lastDirection != -1) {
         lastDirection = -1;
+        delay(50);
         return true;
     }
 
-    if (getVerticalPosition() >= DEAD_ZONE_LOW && getVerticalPosition() <= DEAD_ZONE_HIGH) {
-        lastDirection = 1;
-        return false;
+    if (pos >= DEAD_ZONE_LOW && pos <= DEAD_ZONE_HIGH) {
+        lastDirection = 0;
     }
     return false;
 }
 
 bool Joystick::isDownPressed() {
-    if (getVerticalPosition() > DEAD_ZONE_HIGH && lastDirection != 1) {
+    int pos = getVerticalPosition();
+
+    if (pos > DEAD_ZONE_HIGH && lastDirection != 1) {
         lastDirection = 1;
+        delay(50);
         return true;
     }
 
-    if (getVerticalPosition() >= DEAD_ZONE_LOW && getVerticalPosition() <= DEAD_ZONE_HIGH) {
+    if (pos >= DEAD_ZONE_LOW && pos <= DEAD_ZONE_HIGH) {
         lastDirection = 0;
-        return false;
     }
-    
     return false;
 }

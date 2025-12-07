@@ -24,6 +24,10 @@ void LCD::drawMenu() {
     clear();
 
     for (int i = 0; i < MENU_SIZE; i++) {
+        // Vérifier si l'item courant est vide avant de l'afficher
+        if (menuItems[i].challenger == "") {
+            break;
+        }
 
         int yOffset = i * 100;
 
@@ -34,32 +38,32 @@ void LCD::drawMenu() {
         }
 
         String titre = "Defi ";
-        titre.concat(i);
+        titre.concat(i + 1);  // Afficher "Defi 1" au lieu de "Defi 0"
 
         print(titre.c_str(), ITEM_X_START, ITEM_Y_START + yOffset);
         print("Challenger:", ITEM_X_START, ITEM_Y_2 + yOffset);
         print(menuItems[i].challenger.c_str(), ITEM_X_END, ITEM_Y_2 + yOffset);
         print("Sequence:", ITEM_X_START, ITEM_Y_3 + yOffset);
         print(String(menuItems[i].sequence.length()).c_str(), ITEM_X_END, ITEM_Y_3 + yOffset);
-
-        if (menuItems[i + 1].challenger == "") {
-            break;
-        }
     }
 }
 
 void LCD::moveCursorUp() {
+    if (itemCount == 0) return;  // Pas d'items
+
     if (selectedItem > 0) {
         selectedItem--;
     } else {
-        selectedItem = MENU_SIZE - 1;
+        selectedItem = itemCount - 1;  // Wrapper sur le nombre réel d'items
     }
 
     drawMenu();
 }
 
 void LCD::moveCursorDown() {
-    if (selectedItem < MENU_SIZE - 1) {
+    if (itemCount == 0) return;  // Pas d'items
+
+    if (selectedItem < itemCount - 1) {  // Utiliser itemCount au lieu de MENU_SIZE
         selectedItem++;
     } else {
         selectedItem = 0;
@@ -87,8 +91,12 @@ void LCD::closeCurrentItem() {
 }
 
 void LCD::createMenuItems(FirestoreChallenge items[MENU_SIZE]) {
+    itemCount = 0;
     for (int i = 0; i < MENU_SIZE; i++) {
         menuItems[i] = items[i];
+        if (items[i].challenger != "") {
+            itemCount++;
+        }
     }
 }
 

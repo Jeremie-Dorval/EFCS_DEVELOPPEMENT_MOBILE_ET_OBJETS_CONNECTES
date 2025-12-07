@@ -7,11 +7,11 @@ void Button::begin() {
 }
 
 void Button::setButtonColor(int color) {
-    buttonCollor = color;
+    buttonColor = color;
 }
 
 int Button::getButtonColor() {
-    return buttonCollor;
+    return buttonColor;
 }
 
 bool Button::isPressed() {
@@ -43,18 +43,10 @@ bool Button::isPressed() {
     return false;
 }
 
-void Button::effectOnPress(int led) {
-    if(isPressed()) {
-        unsigned long currentTime = millis();
-
-        if(currentTime - _lastPressTime > DEBOUNCE_DELAY) {
-            _lastPressTime = currentTime;
-        }
-    }
-}
+// Fonction effectOnPress supprimée - logique de debounce déjà gérée dans isPressed()
 
 bool Button::sameColor(int led) {
-    if(buttonCollor == led)
+    if(buttonColor == led)
     {
         return true;
     }

@@ -7,13 +7,10 @@ class Button {
         void setButtonColor(int color);
         int getButtonColor();
         bool isPressed();
-        void effectOnPress(int led);
         bool sameColor(int led);
 
     private:
-        int buttonCollor = NONE;
+        int buttonColor = NONE;
         bool _buttonState;
-        unsigned long _lastPressTime;
         unsigned long _pressStartTime;
-        const unsigned long DEBOUNCE_DELAY = 50; // milliseconds
 };

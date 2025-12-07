@@ -16,6 +16,7 @@ FirestoreChallenges challengeManager(&firebase.getFirebaseData(), FIREBASE_PROJE
 FirestoreChallenge challenge[MENU_SIZE];
 
 bool inGame = false;
+bool loadError = false;  // Flag pour bloquer si erreur de chargement
 
 void setup() {
   Serial.begin(9600);
@@ -48,10 +49,18 @@ void setup() {
   } else {
     Serial.println("Échec du chargement des défis.");
     lcd.print("Erreur de chargement", 10, 10);
+    lcd.print("Redemarrez l'appareil", 10, 40);
+    loadError = true;  // Bloquer le loop
   }
 }
 
 void loop() {
+  // Ne rien faire si erreur de chargement
+  if (loadError) {
+    delay(1000);
+    return;
+  }
+
   if (!inGame) {
 
     if (joystick.isUpPressed()) {
