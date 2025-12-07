@@ -14,27 +14,14 @@ import {
   arrayUnion,
   onSnapshot,
 } from "firebase/firestore";
+import {
+  User,
+  Challenge,
+  EnrichedChallenge,
+  calculatePointsFromSequence,
+} from "@/app/_types/game";
 
-export interface User {
-  userId: string;
-  pseudonyme: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  points: number;
-  winStreak?: number;
-}
-
-// Structure EXACTE requise par la librairie FirestoreChallenges (Arduino)
-export interface Challenge {
-  challenger: string;
-  pointsObtained: number;
-  sequence: string;
-  status: "pending" | "accepted" | "completed";
-  difficulty: number;
-  stepsCompleted?: number;
-  challengerPointsObtained?: number;
-}
+export type { User, Challenge, EnrichedChallenge };
 
 const usersCollection = collection(db, "users");
 
@@ -184,63 +171,17 @@ export const subscribeToLeaderboard = (
   });
 };
 
-// Type enrichi avec infos challenger et points potentiels pour l'affichage
-export interface EnrichedChallenge extends Challenge {
-  index: number;
-  challengerPseudo: string;
-  challengerName: string;
-  sequenceLength: number;
-  potentialPoints: {
-    maxWin: number;
-    maxLose: number;
-    challengerMaxWin: number;
-    challengerMaxLose: number;
-  };
-  result?: {
-    stepsCompleted: number;
-    totalSteps: number;
-    success: boolean;
-    challengerPoints: number;
-  };
-}
-
-/**
- * Calcul des points: système exponentiel avec bonus de difficulté
- * - Gains = 2 × (1.5^n - 1) × difficultyBonus
- * - Pertes = max(gain_miroir, 10% gain_max) / difficultyBonus
- * - Plus de difficulté = plus à gagner, moins à perdre
- */
-const calculatePotentialPoints = (difficulty: number, sequenceLength: number) => {
-  const MIN_SEQ = 5, MAX_SEQ = 15, MULT = 1.5, MIN_LOSS = 0.10;
-  const calcWin = (len: number) => 2 * Math.pow(MULT, len) - 2;
-  const diffBonus = 1 + (difficulty - 1) * 0.10;
-
-  const baseWin = calcWin(sequenceLength);
-  const maxWin = Math.round(baseWin * diffBonus);
-
-  let baseLose: number;
-  if (sequenceLength >= MIN_SEQ) {
-    const maxPossibleWin = calcWin(MAX_SEQ);
-    const mirrorLength = MIN_SEQ + MAX_SEQ - sequenceLength;
-    baseLose = Math.max(maxPossibleWin * MIN_LOSS, calcWin(mirrorLength));
-  } else {
-    baseLose = baseWin;
-  }
-  const maxLose = Math.round(baseLose / diffBonus);
-
-  return {
-    maxWin,
-    maxLose,
-    challengerMaxWin: maxLose,
-    challengerMaxLose: maxWin,
-  };
-};
-
 const enrichChallenge = async (challenge: Challenge, index: number): Promise<EnrichedChallenge> => {
   const challenger = await getUserById(challenge.challenger);
   const difficulty = challenge.difficulty || 5;
   const sequenceLength = challenge.sequence.length;
-  const potentialPoints = calculatePotentialPoints(difficulty, sequenceLength);
+  const { pointsToWin, pointsToLose } = calculatePointsFromSequence(sequenceLength, difficulty);
+  const potentialPoints = {
+    maxWin: pointsToWin,
+    maxLose: pointsToLose,
+    challengerMaxWin: pointsToLose,
+    challengerMaxLose: pointsToWin,
+  };
 
   let result: EnrichedChallenge["result"] | undefined;
   if (challenge.status === "completed") {

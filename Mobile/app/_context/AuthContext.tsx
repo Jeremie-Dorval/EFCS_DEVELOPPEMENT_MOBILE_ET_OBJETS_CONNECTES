@@ -1,4 +1,5 @@
 import { auth, db } from "@/firebaseConfig";
+import { User } from "@/app/_types/game";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   createUserWithEmailAndPassword,
@@ -14,16 +15,8 @@ import { doc, getDoc, serverTimestamp, setDoc, updateDoc } from "firebase/firest
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { Alert } from "react-native";
 
-export interface AppUser {
-  userId: string;        // ID Firebase (anciennement 'id')
-  pseudonyme: string;    // Pseudonyme unique
-  firstName: string;
-  lastName: string;
-  email: string;
-  points: number;        // Points accumulés
-  winStreak: number;     // Série de victoires consécutives
-  createdAt?: any;
-}
+// Alias pour compatibilité - utilise le type User centralisé de game.ts
+export type AppUser = User;
 
 type Ok = { ok: true };
 type Err = { ok: false; error?: string };

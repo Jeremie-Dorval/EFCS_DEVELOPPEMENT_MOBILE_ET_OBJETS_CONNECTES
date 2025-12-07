@@ -1,6 +1,6 @@
 import DifficultyBar from "@/app/_components/DifficultyBar";
 import { useAuth } from "@/app/_context/AuthContext";
-import { getEnrichedPendingChallenges, subscribeToChallenges, acceptChallenge, Challenge, EnrichedChallenge } from "@/app/_services/firestore";
+import { getEnrichedPendingChallenges, subscribeToChallenges, acceptChallenge, EnrichedChallenge } from "@/app/_services/firestore";
 import { COLORS, GRADIENTS, SPACING, BORDER_RADIUS, FONT_SIZE, FONT_WEIGHT, SHADOWS } from "@/app/_styles/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -186,7 +186,7 @@ export default function ChallengesReceived() {
   useEffect(() => {
     if (!appUser?.userId) return;
 
-    const unsubscribe = subscribeToChallenges(appUser.userId, async (allChallenges: Challenge[]) => {
+    const unsubscribe = subscribeToChallenges(appUser.userId, () => {
       loadChallenges();
     });
 
@@ -230,7 +230,7 @@ export default function ChallengesReceived() {
       <Ionicons name="mail-open-outline" size={64} color={COLORS.TEXT_MUTED} />
       <Text style={styles.emptyText}>Aucun défi en attente</Text>
       <Text style={styles.emptySubtext}>
-        Attendez qu'un autre joueur vous envoie un défi
+        {"Attendez qu'un autre joueur vous envoie un défi"}
       </Text>
     </View>
   );

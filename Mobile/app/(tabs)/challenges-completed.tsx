@@ -1,7 +1,7 @@
 import DifficultyBar from "@/app/_components/DifficultyBar";
 import { useAuth } from "@/app/_context/AuthContext";
 import { getEnrichedCompletedChallenges, EnrichedChallenge } from "@/app/_services/firestore";
-import { COLORS, GRADIENTS, SPACING, BORDER_RADIUS, FONT_SIZE, FONT_WEIGHT, SHADOWS } from "@/app/_styles/theme";
+import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZE, FONT_WEIGHT, SHADOWS } from "@/app/_styles/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useCallback, useEffect, useState } from "react";
