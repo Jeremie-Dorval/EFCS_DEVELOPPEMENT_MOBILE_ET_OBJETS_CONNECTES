@@ -7,7 +7,6 @@ void Joystick::begin() {
     pinMode(JOY_Y, INPUT);
     pinMode(JOY_BTN, INPUT_PULLUP);
 
-    lastButtonState = HIGH;
     lastDirection = 0;
 }
 
@@ -16,15 +15,7 @@ int Joystick::getVerticalPosition() {
 }
 
 bool Joystick::isButtonPressed() {
-    bool currentState = digitalRead(JOY_BTN);
-    bool clicked = false;
-
-    if (currentState == LOW && lastButtonState == HIGH) {
-        clicked = true;
-    }
-
-    lastButtonState = currentState;
-    return clicked;
+    return digitalRead(JOY_BTN) == LOW;
 }
 
 bool Joystick::isUpPressed() {

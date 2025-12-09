@@ -55,7 +55,9 @@ void setup() {
 }
 
 void loop() {
-  // Ne rien faire si erreur de chargement
+  int swVal = joystick.isButtonPressed();
+  bool buttonPressed = false;
+
   if (loadError) {
     delay(1000);
     return;
@@ -71,20 +73,28 @@ void loop() {
       lcd.moveCursorDown();
     }
 
-    if (joystick.isButtonPressed()) {
+    if(swVal == LOW && !buttonPressed) {
+      buttonPressed = true;
+    } else if(swVal == HIGH) {
+      buttonPressed = false;
+    }
+
+    // Utiliser la variable stockée
+    if (buttonPressed) {
       int selected = lcd.getSelectedItem();
+      Serial.print("Item sélectionné: ");
+      Serial.println(selected);
 
       if (selected >= 0 && selected < MENU_SIZE) {
+        Serial.println("Démarrage du défi...");
         lcd.openSelectedItem();
 
         game.setSequence(lcd.getMenuItems()[selected].sequence);
         inGame = true;
       }
     }
-
   }
   else {
-
     game.playSequence();
 
     if (!game.playerTurn()) {
@@ -99,13 +109,15 @@ void loop() {
       lcd.print("Succès!", 10, 10);
       delay(1000);
 
-      challengeManager.updatePoints(
-        lcd.getSelectedItem(),
-        game.getRecord()
-      );
+      int selected = lcd.getSelectedItem();
+      if (selected >= 0 && selected < MENU_SIZE) {
+        challengeManager.updatePoints(selected, game.getRecord());
+      }
     }
 
     lcd.closeCurrentItem();
     inGame = false;
   }
+
+  delay(10);  // Petit délai pour stabiliser
 }
