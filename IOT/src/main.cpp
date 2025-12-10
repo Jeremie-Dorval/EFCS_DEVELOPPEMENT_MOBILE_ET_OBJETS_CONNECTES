@@ -38,7 +38,7 @@ void setup() {
   lcd.clear();
 
   Serial.println("Chargement des défis...");
-  if(challengeManager.loadChallenges("123456")) {
+  if(challengeManager.loadChallenges("jgbWbzLttoS6TAf9K4q95TBQd4v2")) {
     challengeManager.printAll();
 
     for (int i = 0; i < MENU_SIZE; i++) {

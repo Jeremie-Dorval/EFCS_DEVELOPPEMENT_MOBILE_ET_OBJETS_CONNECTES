@@ -3,17 +3,17 @@
 
 #include <DFRobot_GDL.h>
 
-#define PIN_BT_GREEN 17
-#define PIN_BT_WHITE 16
+#define PIN_BT_GREEN 12
+#define PIN_BT_WHITE 13
 #define PIN_BT_RED 27
 
-#define PIN_LED_GREEN 26
+#define PIN_LED_GREEN 16
 #define PIN_LED_WHITE 19
-#define PIN_LED_RED 25
+#define PIN_LED_RED 17
 
 #define TFT_DC 2
 #define TFT_CS 5
-#define TFT_RST 4
+#define TFT_RST 14
 
 #define WIFI_SSID "PORTABLEJÉ_1712"
 #define WIFI_PASSWORD ";92454nV"
@@ -22,7 +22,7 @@
 #define FIREBASE_PROJECT_ID "efcs25"
 
 #define JOY_Y 35
-#define JOY_BTN 34
+#define JOY_BTN 25
 
 #define MENU_SIZE 5
 
