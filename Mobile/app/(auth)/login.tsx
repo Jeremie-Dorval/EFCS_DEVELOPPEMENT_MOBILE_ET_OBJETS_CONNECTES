@@ -1,3 +1,4 @@
+// Écran de connexion Firebase Auth
 import { useAuth } from "@/app/_context/AuthContext";
 import { COLORS, GRADIENTS, SPACING, BORDER_RADIUS, FONT_SIZE, FONT_WEIGHT, SHADOWS } from "@/app/_styles/theme";
 import { Ionicons } from "@expo/vector-icons";
@@ -144,7 +145,7 @@ export default function Login() {
           <View style={styles.footer}>
             <View style={styles.featureRow}>
               <View style={styles.featureItem}>
-                <Ionicons name="flash" size={24} color={COLORS.WARNING} />
+                <Ionicons name="flash" size={24} color={COLORS.WARNING} />  {/* demander le nom des Ionicons a claude code */}
                 <Text style={styles.featureText}>Défis rapides</Text>
               </View>
               <View style={styles.featureItem}>
@@ -163,7 +164,7 @@ export default function Login() {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create({ //demander de l'aide a claude code pour faire le centrage. pompt: aide moi a centré le tout dans un keyboardavoidingview avec un scrollview.
   gradient: {
     flex: 1,
   },

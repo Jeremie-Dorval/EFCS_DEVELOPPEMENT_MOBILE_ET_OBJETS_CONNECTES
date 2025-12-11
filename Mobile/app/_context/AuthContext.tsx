@@ -1,3 +1,5 @@
+// Contexte d'authentification Firebase
+// Gère: connexion, inscription, déconnexion, avatar local, changement de mot de passe
 import { auth, db } from "@/firebaseConfig";
 import { User } from "@/app/_types/game";
 import AsyncStorage from "@react-native-async-storage/async-storage";

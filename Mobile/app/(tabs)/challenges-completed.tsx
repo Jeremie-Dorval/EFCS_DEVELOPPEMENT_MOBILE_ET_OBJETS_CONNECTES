@@ -1,3 +1,4 @@
+// Historique des défis terminés avec résultats (points gagnés/perdus)
 import DifficultyBar from "@/app/_components/DifficultyBar";
 import { useAuth } from "@/app/_context/AuthContext";
 import { getEnrichedCompletedChallenges, EnrichedChallenge } from "@/app/_services/firestore";
@@ -28,7 +29,7 @@ const CompletedChallengeCard = ({ challenge, index }: CompletedChallengeCardProp
   return (
     <View style={styles.challengeCard}>
       <LinearGradient
-        colors={isSuccess ? ['#1E293B', '#134E2A'] : ['#1E293B', '#4A1E1E']}
+        colors={isSuccess ? ['#1E293B', '#134E2A'] : ['#1E293B', '#4A1E1E']} //claude code a trouver ses couleurs.
         style={styles.challengeCardGradient}
       >
         <View style={styles.cardHeader}>
@@ -37,7 +38,7 @@ const CompletedChallengeCard = ({ challenge, index }: CompletedChallengeCardProp
               styles.statusIcon,
               isSuccess ? styles.statusIconSuccess : styles.statusIconFail
             ]}>
-              <Ionicons
+              <Ionicons // demander a claude code le nom de chaque ionicon ci-dessous
                 name={isSuccess ? "checkmark-circle" : "close-circle"}
                 size={24}
                 color={isSuccess ? COLORS.SUCCESS : COLORS.DANGER}
@@ -209,7 +210,7 @@ export default function ChallengesCompleted() {
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
           refreshControl={
-            <RefreshControl
+            <RefreshControl //https://reactnative.dev/docs/refreshcontrol
               refreshing={refreshing}
               onRefresh={onRefresh}
               tintColor={COLORS.PRIMARY}
@@ -223,7 +224,7 @@ export default function ChallengesCompleted() {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create({ // aider de claude code pour aller plus vite. prompt: aide moi a faire les spacing, font size, font weight et border radius.
   container: {
     flex: 1,
   },

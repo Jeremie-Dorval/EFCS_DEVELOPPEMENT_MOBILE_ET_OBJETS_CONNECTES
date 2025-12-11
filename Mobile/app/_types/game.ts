@@ -1,3 +1,4 @@
+// Types et calculs du jeu de mémoire (cohérent avec l'IoT)
 export interface User {
   userId: string;
   pseudonyme: string;
@@ -6,10 +7,10 @@ export interface User {
   email: string;
   points: number;
   winStreak: number;
-  createdAt?: any; // Firestore Timestamp
+  createdAt?: any;
 }
 
-// Structure d'un défi (correspond exactement à la structure Firestore requise)
+// Structure d'un défi
 export interface Challenge {
   challenger: string;      // userId de celui qui défie
   pointsObtained: number;  // Points obtenus par le défié (0 si pending)
@@ -32,10 +33,10 @@ export interface EnrichedChallenge extends Challenge {
   challengerName: string;     // Nom complet du challenger
   sequenceLength: number;     // Longueur de la séquence
   potentialPoints: {
-    maxWin: number;           // Points max à gagner
-    maxLose: number;          // Points max à perdre
-    challengerMaxWin: number; // Points max que le challenger peut gagner
-    challengerMaxLose: number; // Points max que le challenger peut perdre
+    maxWin: number;
+    maxLose: number;
+    challengerMaxWin: number;
+    challengerMaxLose: number;
   };
   // Résultats après complétion (si status === 'completed')
   result?: {
@@ -73,32 +74,10 @@ export const GAME_CONSTANTS = {
   DEFAULT_DIFFICULTY: 5,
 };
 
-/**
- * Calcul des points basé sur la longueur de séquence ET la difficulté
- *
- * FORMULE EXPONENTIELLE:
- * 1. Chaque coup a une valeur qui augmente exponentiellement (×1.5):
- *    - Coup 1 = 1 pt
- *    - Coup 2 = 1 × 1.5 = 1.5 pts
- *    - Coup 3 = 1.5 × 1.5 = 2.25 pts
- *    - Coup n = 1 × 1.5^(n-1)
- *
- * 2. Points à GAGNER = somme cumulative: 2 × (1.5^n - 1)
- *
- * 3. Points à PERDRE = système miroir avec minimum 10%
- *    - Perte = max(gain_longueur_miroir, 10% × gain_max)
- *
- * 4. Bonus de difficulté: niveau 1 = 1.0, niveau 10 = 1.9
- *    - GAINS: multipliés par le bonus (plus de difficulté = plus de gains)
- *    - PERTES: divisées par le bonus (plus de difficulté = moins de pertes)
- *
- * 5. Transfert: gagnés = déduits adversaire, perdus = ajoutés adversaire
- *
- * EXEMPLES (difficulté 1):
- *    5 coups:  +13 / -874 pts  (risqué)
- *   10 coups:  +113 / -113 pts (équilibré)
- *   15 coups:  +874 / -87 pts  (avantageux)
- */
+// Calcul des points: formule exponentielle 2 × (1.5^n - 1) avec bonus difficulté
+// Séquence courte = risqué (peu à gagner, beaucoup à perdre)
+// Séquence longue = avantageux (beaucoup à gagner, peu à perdre)
+// Faites avec l'aide de claude code pour équilibrer les valeurs. pompt: ajuste les valeurs pour que ce soit exponentielle et équilibré
 export const calculatePointsFromSequence = (sequenceLength: number, difficulty: number) => {
   const MIN_SEQUENCE = 5;
   const MAX_SEQUENCE = 15;
@@ -128,12 +107,7 @@ export const calculatePointsFromSequence = (sequenceLength: number, difficulty: 
   return { pointsToWin, pointsToLose };
 };
 
-/**
- * Calcul des points finaux basé sur le ratio de réussite
- * - 100% réussite = points max gagnés
- * - 0% réussite = points max perdus
- * - Partiel = interpolation linéaire
- */
+// Calcul final: interpolation linéaire entre perte max (0%) et gain max (100%)
 export const calculateFinalPoints = (
   sequenceLength: number,
   difficulty: number,

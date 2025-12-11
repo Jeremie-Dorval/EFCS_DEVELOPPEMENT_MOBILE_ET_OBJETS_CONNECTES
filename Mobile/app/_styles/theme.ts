@@ -1,3 +1,4 @@
+// Thème visuel de l'application. faite avec l'aide de claude code, prompt: peu tu me sortir des palettes de couleur sombre pour une application mobile avec plusieurs gradients.
 export const COLORS = {
   PRIMARY: '#6366F1',
   SECONDARY: '#8B5CF6',
@@ -163,31 +164,7 @@ export const COMMON_STYLES = {
   },
 };
 
-// Système de pointage - Constantes
-// Note: Les fonctions de calcul sont dans _types/game.ts et _services/firestore.ts
-//
-// FORMULE EXPONENTIELLE:
-// - Chaque coup vaut: BASE_POINTS × MULTIPLIER^(coup-1)
-// - Coup 1 = 1, Coup 2 = 1.5, Coup 3 = 2.25, etc.
-// - Points à GAGNER = somme cumulative = 2 × (1.5^n - 1)
-// - Points à PERDRE = max(gain_miroir, 10% × gain_max)
-//   → Longueur miroir = 20 - n
-//   → Minimum = 10% du gain max (87 pts pour difficulté 1)
-// - Bonus difficulté: niveau 1 = 1.0, niveau 10 = 1.9
-//   → GAINS: multipliés par le bonus (plus de difficulté = plus de gains)
-//   → PERTES: divisées par le bonus (plus de difficulté = moins de pertes)
-//
-// EXEMPLES (difficulté 1):
-// ┌─────────┬──────────┬──────────┬─────────────────────┐
-// │ Coups   │ À gagner │ À perdre │ Risque              │
-// ├─────────┼──────────┼──────────┼─────────────────────┤
-// │ 5       │ 13 pts   │ 874 pts  │ Très risqué (1:67)  │
-// │ 7       │ 31 pts   │ 307 pts  │ Risqué (1:10)       │
-// │ 10      │ 113 pts  │ 113 pts  │ Équilibré (1:1)     │
-// │ 12      │ 256 pts  │ 87 pts   │ Avantageux (3:1)    │
-// │ 15      │ 874 pts  │ 87 pts   │ Très avantageux     │
-// └─────────┴──────────┴──────────┴─────────────────────┘
-//
+// Constantes du système de pointage (voir _types/game.ts pour les calculs)
 export const SCORING = {
   MIN_SEQUENCE_LENGTH: 5,
   MAX_SEQUENCE_LENGTH: 15,

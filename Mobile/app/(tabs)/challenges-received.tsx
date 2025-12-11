@@ -1,3 +1,4 @@
+// Liste des défis reçus (pending/accepted) - Accepter pour jouer sur l'IoT
 import DifficultyBar from "@/app/_components/DifficultyBar";
 import { useAuth } from "@/app/_context/AuthContext";
 import { getEnrichedPendingChallenges, subscribeToChallenges, acceptChallenge, EnrichedChallenge } from "@/app/_services/firestore";
@@ -43,13 +44,13 @@ const ChallengeCard = ({ challenge, index, onAccept, isAccepting }: ChallengeCar
           </View>
           {isPending && (
             <View style={styles.statusBadge}>
-              <Ionicons name="hourglass" size={14} color={COLORS.WARNING} />
+              <Ionicons name="hourglass" size={14} color={COLORS.WARNING} /> {/* demander a claude code le nom de chaque ionicon ci-dessous */}
               <Text style={styles.statusBadgeText}>En attente</Text>
             </View>
           )}
           {isAccepted && (
             <View style={[styles.statusBadge, styles.statusBadgeAccepted]}>
-              <ActivityIndicator size="small" color={COLORS.PRIMARY} />
+              <ActivityIndicator size="small" color={COLORS.PRIMARY} /> {/* https://reactnative.dev/docs/activityindicator */}
               <Text style={[styles.statusBadgeText, styles.statusBadgeTextAccepted]}>En cours</Text>
             </View>
           )}
@@ -271,7 +272,7 @@ export default function ChallengesReceived() {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create({ // faites avec l'aide de claude code. prompt: aide moi a faire les spacing, font size, font weight et border radius.
   container: {
     flex: 1,
   },

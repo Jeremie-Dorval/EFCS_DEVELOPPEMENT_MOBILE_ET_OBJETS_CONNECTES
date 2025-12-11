@@ -1,3 +1,4 @@
+// Classement des joueurs par points - Cliquer sur un joueur pour le défier
 import { useAuth } from "@/app/_context/AuthContext";
 import { getLeaderboard, subscribeToLeaderboard } from "@/app/_services/firestore";
 import { COLORS, GRADIENTS, SPACING, BORDER_RADIUS, FONT_SIZE, FONT_WEIGHT, SHADOWS } from "@/app/_styles/theme";
@@ -35,7 +36,7 @@ const LeaderboardItem = ({ user, rank, isCurrentUser, onChallenge }: Leaderboard
     }
   };
 
-  const getRankIcon = () => {
+  const getRankIcon = () => { // demander a claude code les icones ionicons pour les 3 premiers
     switch (rank) {
       case 1: return "trophy";
       case 2: return "medal";

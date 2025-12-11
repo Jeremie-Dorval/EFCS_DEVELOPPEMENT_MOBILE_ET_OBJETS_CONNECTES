@@ -1,3 +1,4 @@
+// Écran de création de défi: sélection LEDs (1-2-3) + difficulté (1-10)
 import { DifficultySlider } from "@/app/_components/DifficultyBar";
 import { useAuth } from "@/app/_context/AuthContext";
 import { createChallenge } from "@/app/_services/firestore";
@@ -184,7 +185,7 @@ export default function CreateChallenge() {
               onPress={removeLastFromSequence}
               disabled={sequence.length === 0}
             >
-              <Ionicons name="backspace" size={20} color={COLORS.TEXT_PRIMARY} />
+              <Ionicons name="backspace" size={20} color={COLORS.TEXT_PRIMARY} /> {/* demander a claude code le nom de chaque ionicon ci-dessous */}
               <Text style={styles.actionButtonText}>Retirer dernier</Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -232,12 +233,12 @@ export default function CreateChallenge() {
             </Text>
           )}
         </ScrollView>
-      </SafeAreaView>
+      </SafeAreaView> {/*https://reactnative.dev/docs/safeareaview */}
     </LinearGradient>
   );
 }
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create({ //aider de claude code pour aller plus vite. prompt: aide moi a faire les spacing, font size, font weight et border radius.
   container: {
     flex: 1,
   },

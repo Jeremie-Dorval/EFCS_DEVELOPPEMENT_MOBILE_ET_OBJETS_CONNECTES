@@ -1,3 +1,4 @@
+// Profil utilisateur: avatar, stats, changement de mot de passe
 import { useAuth } from "@/app/_context/AuthContext";
 import { getUserRank } from "@/app/_services/firestore";
 import { COLORS, GRADIENTS, SPACING, BORDER_RADIUS, FONT_SIZE, FONT_WEIGHT, SHADOWS } from "@/app/_styles/theme";
@@ -63,7 +64,7 @@ export default function Profil() {
     const ok = await ensureGalleryPermission();
     if (!ok) return;
     const res = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images, //https://docs.expo.dev/versions/latest/sdk/imagepicker/
       quality: 0.8,
     });
     if (!res.canceled && res.assets?.[0]?.uri) await setAvatar(res.assets[0].uri);
@@ -133,7 +134,7 @@ export default function Profil() {
                 </LinearGradient>
               )}
               <TouchableOpacity style={styles.avatarEditButton} onPress={pickFromGallery}>
-                <Ionicons name="camera" size={16} color={COLORS.TEXT_PRIMARY} />
+                <Ionicons name="camera" size={16} color={COLORS.TEXT_PRIMARY} /> {/* demander a claude code le nom de chaque Ionicon que je voulais pour la parti ci-dessous */}
               </TouchableOpacity>
             </View>
 

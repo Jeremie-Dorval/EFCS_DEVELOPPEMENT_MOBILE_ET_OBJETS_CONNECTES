@@ -1,3 +1,5 @@
+// Composant d'affichage/sélection de difficulté (1-10 avec icônes skull)
+// Transformer avec les emoji skulls 💀 par claude code, prompt: prend ma classe DifficultyBar, modifie la esthetiquement pour rajouter les emoji de skull et de cercle noir pour faire la bar de difficulté. trouver moi des palettes de couleur attrayante, no toucher pas a la logique.
 import { COLORS, SPACING, FONT_SIZE, FONT_WEIGHT } from "@/app/_styles/theme";
 import { GAME_CONSTANTS, calculatePointsFromSequence } from "@/app/_types/game";
 import { Ionicons } from "@expo/vector-icons";
@@ -89,7 +91,7 @@ export default function DifficultyBar({
 function getDifficultyColor(difficulty: number): string {
   if (difficulty <= 3) return COLORS.SUCCESS;      // Facile - Vert
   if (difficulty <= 6) return COLORS.WARNING;      // Moyen - Orange
-  if (difficulty <= 8) return "#F97316";           // Difficile - Orange foncé
+  if (difficulty <= 8) return "#F97316";         // Difficile - Orange foncé
   return COLORS.DANGER;                            // Très difficile - Rouge
 }
 
@@ -171,7 +173,7 @@ export function DifficultySlider({ value, onChange, sequenceLength = 0 }: Diffic
   );
 }
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create({ //faites en partie par claude code avec le prompt montré en debut de fichier.
   container: {
     gap: SPACING.XS,
   },

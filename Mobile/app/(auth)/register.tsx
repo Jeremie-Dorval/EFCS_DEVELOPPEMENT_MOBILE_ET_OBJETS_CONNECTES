@@ -1,3 +1,4 @@
+// Écran d'inscription Firebase Auth (création compte + profil Firestore)
 import { useAuth } from "@/app/_context/AuthContext";
 import { COLORS, GRADIENTS, SPACING, BORDER_RADIUS, FONT_SIZE, FONT_WEIGHT, SHADOWS } from "@/app/_styles/theme";
 import { Ionicons } from "@expo/vector-icons";
@@ -157,7 +158,7 @@ export default function Register() {
                   style={styles.input}
                 />
                 <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-                  <Ionicons
+                  <Ionicons /* demander a claude code le nom de ses Ionicons */
                     name={showPassword ? "eye-off" : "eye"}
                     size={20}
                     color={COLORS.TEXT_SECONDARY}
@@ -186,7 +187,7 @@ export default function Register() {
               disabled={loading}
               activeOpacity={0.8}
             >
-              <LinearGradient
+              <LinearGradient /* demander a claude code: comment faire un gradient horizontal */
                 colors={GRADIENTS.BUTTON}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
