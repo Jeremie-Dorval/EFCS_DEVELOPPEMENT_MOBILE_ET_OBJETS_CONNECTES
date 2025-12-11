@@ -1,5 +1,12 @@
+/**
+ * ChallengeRepository.cpp
+ * Gere les operations CRUD sur les defis dans Firestore
+ * Permet de lire la difficulte et marquer un defi comme complete
+ */
+
 #include "ChallengeRepository.h"
 
+// Extrait une valeur string du JSON Firestore
 String ChallengeRepository::extractString(const String& section, const char* field) {
     int pos = section.indexOf(field);
     if (pos == -1) return "";
@@ -8,6 +15,7 @@ String ChallengeRepository::extractString(const String& section, const char* fie
     return section.substring(start, end);
 }
 
+// Extrait une valeur int du JSON Firestore
 int ChallengeRepository::extractInt(const String& section, const char* field, int defaultVal) {
     int pos = section.indexOf(field);
     if (pos == -1) return defaultVal;
@@ -16,6 +24,7 @@ int ChallengeRepository::extractInt(const String& section, const char* field, in
     return section.substring(start, end).toInt();
 }
 
+// Recupere la difficulte d'un defi specifique depuis Firestore
 int ChallengeRepository::getDifficulty(String playerId, int arrayIndex) {
     String documentPath = "challenges/" + playerId;
     FirebaseData& fbdo = firebase.getData();
@@ -47,6 +56,8 @@ int ChallengeRepository::getDifficulty(String playerId, int arrayIndex) {
     return 5;
 }
 
+// Marque un defi comme complete et sauvegarde les resultats dans Firestore
+// Reconstruit le JSON complet du tableau pour la mise a jour (reconstruction json fait avec l'aide de claude code prompt: peut tu m'aider a completer ce code C++ qui reconstruit un json firestore?)
 bool ChallengeRepository::completeChallenge(String playerId, int arrayIndex,
                                             int pointsObtained, int stepsCompleted,
                                             int totalSteps, int challengerPointsObtained) {

@@ -4,6 +4,9 @@
 #include <Arduino.h>
 #include "config.h"
 
+// Callback pour mise a jour progression en temps reel
+typedef void (*ProgressCallback)(int current, int total);
+
 class Game {
     public:
         void init();
@@ -17,7 +20,7 @@ class Game {
         // Gameplay
         void blinkStart();
         void playSequence();
-        bool playerTurn();
+        bool playerTurn(ProgressCallback onProgress = nullptr);
         void gameOver();
 
         // Score et points

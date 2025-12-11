@@ -9,7 +9,6 @@
 #include "GameScreen.h"
 #include "ResultScreen.h"
 
-// Facade qui utilise les ecrans specialises
 class LCD {
 public:
     void begin();
@@ -23,11 +22,11 @@ public:
     void moveCursorDown();
     void createMenuItems(FirestoreChallenge items[MENU_SIZE]);
 
-    // Mode select (garde pour compatibilite)
-    void drawModeSelect(const String& challengerName, int sequenceLength);
-    void moveModeUp();
-    void moveModeDown();
-    GameMode getSelectedMode() const { return (modeSelection == 0) ? MODE_NORMAL : MODE_EXPERT; }
+    // Difficulty select
+    void drawDifficultySelect(const String& challengerName, int sequenceLength, int currentDifficulty, int mobileDifficulty);
+    void moveDifficultyUp();
+    void moveDifficultyDown();
+    int getSelectedDifficulty() const { return selectedDifficulty; }
 
     // Jeu
     void drawGamePlaying(const String& challengerName, int sequenceLength, int difficulty);
@@ -57,7 +56,8 @@ private:
     FirestoreChallenge menuItems[MENU_SIZE] = {};
     int selectedItem = 0;
     int itemCount = 0;
-    int modeSelection = 0;
+    int selectedDifficulty = 5;
+    int mobileDiff = 5;
     bool shouldRedraw = true;
     ScreenMode currentScreen = SCREEN_MENU;
 };

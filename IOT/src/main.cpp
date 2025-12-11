@@ -3,7 +3,7 @@
 #include <FirestoreChallenges/FirestoreChallenges.h>
 #include "game.h"
 #include "LCD.h"
-#include "Joystick.h"
+//#include "Joystick.h"
 #include "FirebaseConnection.h"
 #include "ChallengeRepository.h"
 #include "UserRepository.h"

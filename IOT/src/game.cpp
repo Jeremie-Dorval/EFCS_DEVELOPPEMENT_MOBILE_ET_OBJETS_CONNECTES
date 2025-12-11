@@ -19,7 +19,7 @@ void Game::init() {
 
 void Game::setSequence(const String seq) {
     sequence = seq;
-    record = 0;  // Reset le score pour nouveau jeu
+    record = 0; 
 }
 
 void Game::setMode(GameMode mode) {
@@ -71,7 +71,7 @@ void Game::playSequence() {
 
 // ==================== TOUR DU JOUEUR ====================
 
-bool Game::playerTurn() {
+bool Game::playerTurn(ProgressCallback onProgress) {
     for (int i = 0; i < sequence.length(); i++) {
         int expectedColor = sequence[i] - '0';
         // Attendre que le joueur appuie sur un bouton ou timeout
@@ -88,6 +88,11 @@ bool Game::playerTurn() {
             led.ledOn(expectedColor);
             delay(300);
             led.ledOff(expectedColor);
+
+            // Mise a jour progression en temps reel
+            if (onProgress != nullptr) {
+                onProgress(record, sequence.length());
+            }
         } else {
             return false;
         }

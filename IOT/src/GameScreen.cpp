@@ -1,5 +1,11 @@
+/**
+ * GameScreen.cpp
+ * Ecran de jeu - affiche les infos du defi et la barre de progression
+ */
+
 #include "GameScreen.h"
 
+// Dessine l'ecran de jeu avec infos du defi et barre de progression
 void GameScreen::draw(const String& challenger, int seqLength, int difficulty) {
     ui.clear();
     ui.drawTitle("DEFI EN COURS");
@@ -30,7 +36,7 @@ void GameScreen::draw(const String& challenger, int seqLength, int difficulty) {
         diffColor = UI_COLOR_FAIL;
     }
 
-    // Barre de difficulte
+    // Barre de difficulte (aider de claude code: prompt: peut tu m'aider avec l'Esthetique de cette bar de difficulté ?)
     int barX = 20;
     int barY = 130;
     int barWidth = UIRenderer::SCREEN_WIDTH - 40;
@@ -45,6 +51,7 @@ void GameScreen::draw(const String& challenger, int seqLength, int difficulty) {
     ui.drawBox(20, 180, UIRenderer::SCREEN_WIDTH - 40, 20, UI_COLOR_TEXT);
 }
 
+// Met a jour la barre de progression (appele en temps reel via callback)
 void GameScreen::updateProgress(int current, int total) {
     if (total <= 0) return;
 

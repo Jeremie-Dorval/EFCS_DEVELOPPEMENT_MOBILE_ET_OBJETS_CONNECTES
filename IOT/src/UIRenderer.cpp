@@ -1,12 +1,19 @@
+/**
+ * UIRenderer.cpp
+ * Classe utilitaire pour le rendu graphique sur ecran ST7789 (320x240)
+ * Encapsule les primitives de dessin: texte, rectangles, lignes
+ */
+
 #include "UIRenderer.h"
 
+// Initialise l'ecran LCD avec rotation paysage
 void UIRenderer::begin() {
     Serial.println("Initialisation de l'ecran LCD...");
     screen.begin();
     screen.fillScreen(UI_COLOR_BG);
     screen.setTextSize(2);
     screen.setTextColor(UI_COLOR_TEXT, UI_COLOR_BG);
-    screen.setRotation(1);
+    screen.setRotation(1);  // Mode paysage
 }
 
 void UIRenderer::clear() {
@@ -18,6 +25,7 @@ void UIRenderer::print(const char* msg, int x, int y) {
     screen.print(msg);
 }
 
+// Affiche du texte centre horizontalement (12px par caractere en taille 2)
 void UIRenderer::printCentered(const char* msg, int y) {
     int len = strlen(msg);
     int x = (SCREEN_WIDTH - (len * 12)) / 2;
@@ -40,6 +48,7 @@ void UIRenderer::fillBox(int x, int y, int w, int h, uint16_t color) {
     screen.fillRect(x, y, w, h, color);
 }
 
+// Dessine un titre centre avec ligne de separation
 void UIRenderer::drawTitle(const char* title) {
     screen.setTextColor(UI_COLOR_TITLE, UI_COLOR_BG);
     screen.setTextSize(2);

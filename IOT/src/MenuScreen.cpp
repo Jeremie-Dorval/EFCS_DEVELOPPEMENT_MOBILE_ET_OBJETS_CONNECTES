@@ -1,5 +1,11 @@
+/**
+ * MenuScreen.cpp
+ * Ecran du menu principal - affiche la liste des defis disponibles
+ */
+
 #include "MenuScreen.h"
 
+// Dessine la liste des defis avec surbrillance sur l'item selectionne (la surbrillance est faite par claude code)
 void MenuScreen::draw(FirestoreChallenge items[], int count, int selected) {
     ui.clear();
     ui.drawTitle("DEFIS DISPONIBLES");

@@ -36,6 +36,7 @@
 #define TIMING_EXPERT_OFF  150
 #define TIMING_BLINK       200
 #define PLAYER_TIMEOUT     10000
+#define REFRESH_INTERVAL   30000
 
 // ============== JOYSTICK ==============
 #define DEAD_ZONE_LOW  1500
@@ -68,14 +69,14 @@ enum GameMode {
 
 enum ScreenMode {
     SCREEN_MENU = 0,
-    SCREEN_MODE_SELECT = 1,
+    SCREEN_DIFFICULTY_SELECT = 1,
     SCREEN_GAME_PLAYING = 2,
     SCREEN_GAME_OVER = 3
 };
 
 enum GameState {
     STATE_MENU,
-    STATE_MODE_SELECT,
+    STATE_DIFFICULTY_SELECT,
     STATE_PLAYING,
     STATE_GAME_OVER
 };

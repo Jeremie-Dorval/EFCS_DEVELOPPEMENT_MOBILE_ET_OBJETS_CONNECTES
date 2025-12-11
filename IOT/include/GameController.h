@@ -19,6 +19,9 @@ public:
     bool loadChallenges(const String& playerId);
     void update();
 
+    // Pointeur statique pour callback de progression
+    static LCD* lcdPtr;
+
 private:
     Game& game;
     LCD& lcd;
@@ -36,8 +39,13 @@ private:
     FirestoreChallenge challenges[MENU_SIZE];
     int difficulties[MENU_SIZE];
 
+    // Refresh temps reel
+    unsigned long lastRefreshTime = 0;
+    void refreshChallenges();
+    bool hasChallengesChanged(FirestoreChallenge newChallenges[MENU_SIZE]);
+
     void handleMenuState();
-    void handleModeSelectState();
+    void handleDifficultySelectState();
     void handlePlayingState();
     void handleGameOverState();
     void runGame();

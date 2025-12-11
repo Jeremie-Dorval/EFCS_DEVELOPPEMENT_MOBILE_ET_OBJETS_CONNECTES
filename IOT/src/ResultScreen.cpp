@@ -1,5 +1,11 @@
+/**
+ * ResultScreen.cpp
+ * Ecran de fin de partie - affiche score et points gagnes/infliges
+ */
+
 #include "ResultScreen.h"
 
+// Dessine l'ecran de resultat avec score et points (la couleur est faites par claude code prompt: peu tu me rajouter des couleurs attrayantes)
 void ResultScreen::draw(const GameResult& result, const String& challenger) {
     ui.clear();
 

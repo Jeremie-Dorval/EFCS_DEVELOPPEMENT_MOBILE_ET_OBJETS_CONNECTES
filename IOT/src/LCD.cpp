@@ -45,12 +45,15 @@ void LCD::createMenuItems(FirestoreChallenge items[MENU_SIZE]) {
     }
 }
 
-// ==================== MODE SELECT ====================
+// ==================== DIFFICULTY SELECT ====================
 
-void LCD::drawModeSelect(const String& challengerName, int sequenceLength) {
-    currentScreen = SCREEN_MODE_SELECT;
+void LCD::drawDifficultySelect(const String& challengerName, int sequenceLength, int currentDifficulty, int mobileDifficulty) {
+    currentScreen = SCREEN_DIFFICULTY_SELECT;
+    selectedDifficulty = currentDifficulty;
+    mobileDiff = mobileDifficulty;
+
     ui.clear();
-    ui.drawTitle("CHOISIR LE MODE");
+    ui.drawTitle("DIFFICULTE");
 
     ui.setTextColor(UI_COLOR_TEXT, UI_COLOR_BG);
     String info = "Defi de: ";
@@ -62,40 +65,68 @@ void LCD::drawModeSelect(const String& challengerName, int sequenceLength) {
     seqInfo.concat(" couleurs");
     ui.printCentered(seqInfo.c_str(), 70);
 
-    int normalY = 100;
-    if (modeSelection == 0) {
-        ui.fillBox(20, normalY - 5, UIRenderer::SCREEN_WIDTH - 40, 50, UI_COLOR_SELECT_BG);
-        ui.setTextColor(UI_COLOR_NORMAL, UI_COLOR_SELECT_BG);
-    } else {
-        ui.drawBox(20, normalY - 5, UIRenderer::SCREEN_WIDTH - 40, 50, UI_COLOR_NORMAL);
-        ui.setTextColor(UI_COLOR_NORMAL, UI_COLOR_BG);
-    }
-    ui.print("> NORMAL", 30, normalY);
+    // Afficher difficulte mobile comme reference
+    ui.setTextColor(COLOR_RGB565_LGRAY, UI_COLOR_BG);
+    String mobileInfo = "(Mobile: ";
+    mobileInfo.concat(mobileDifficulty);
+    mobileInfo.concat("/10)");
+    ui.printCentered(mobileInfo.c_str(), 95);
 
-    int expertY = 160;
-    if (modeSelection == 1) {
-        ui.fillBox(20, expertY - 5, UIRenderer::SCREEN_WIDTH - 40, 50, UI_COLOR_SELECT_BG);
-        ui.setTextColor(UI_COLOR_EXPERT, UI_COLOR_SELECT_BG);
-    } else {
-        ui.drawBox(20, expertY - 5, UIRenderer::SCREEN_WIDTH - 40, 50, UI_COLOR_EXPERT);
-        ui.setTextColor(UI_COLOR_EXPERT, UI_COLOR_BG);
-    }
-    ui.print("> EXPERT", 30, expertY);
+    // Barre de progression de difficulte
+    int barX = 40;
+    int barY = 130;
+    int barWidth = 240;
+    int barHeight = 30;
+
+    // Fond de la barre
+    ui.drawBox(barX, barY, barWidth, barHeight, UI_COLOR_TEXT);
+
+    // Remplissage selon difficulte
+    int fillWidth = (barWidth - 4) * selectedDifficulty / 10;
+    uint16_t fillColor = (selectedDifficulty <= 3) ? UI_COLOR_SUCCESS :
+                         (selectedDifficulty <= 6) ? UI_COLOR_POINTS :
+                         (selectedDifficulty <= 8) ? COLOR_RGB565_ORANGE : UI_COLOR_FAIL;
+    ui.fillBox(barX + 2, barY + 2, fillWidth, barHeight - 4, fillColor);
+
+    // Afficher valeur
+    ui.setTextColor(UI_COLOR_TEXT, UI_COLOR_BG);
+    String diffText = "< ";
+    diffText.concat(selectedDifficulty);
+    diffText.concat("/10 >");
+    ui.printCentered(diffText.c_str(), 170);
+
+    // Nom de la difficulte
+    const char* diffName;
+    if (selectedDifficulty <= 3) diffName = "FACILE";
+    else if (selectedDifficulty <= 6) diffName = "NORMALE";
+    else if (selectedDifficulty <= 8) diffName = "DIFFICILE";
+    else diffName = "EXTREME";
+
+    ui.setTextColor(fillColor, UI_COLOR_BG);
+    ui.printCentered(diffName, 195);
 
     ui.setTextSize(1);
     ui.setTextColor(COLOR_RGB565_LGRAY, UI_COLOR_BG);
-    ui.printCentered("Joystick: Changer | Clic: Commencer", 220);
+    ui.printCentered("Joystick: Ajuster | Clic: Commencer", 220);
     ui.setTextSize(2);
 }
 
-void LCD::moveModeUp() {
-    modeSelection = 0;
-    drawModeSelect(menuItems[selectedItem].challenger, menuItems[selectedItem].sequence.length());
+void LCD::moveDifficultyUp() {
+    if (selectedDifficulty < 10) {
+        selectedDifficulty++;
+        drawDifficultySelect(menuItems[selectedItem].challenger,
+                            menuItems[selectedItem].sequence.length(),
+                            selectedDifficulty, mobileDiff);
+    }
 }
 
-void LCD::moveModeDown() {
-    modeSelection = 1;
-    drawModeSelect(menuItems[selectedItem].challenger, menuItems[selectedItem].sequence.length());
+void LCD::moveDifficultyDown() {
+    if (selectedDifficulty > 1) {
+        selectedDifficulty--;
+        drawDifficultySelect(menuItems[selectedItem].challenger,
+                            menuItems[selectedItem].sequence.length(),
+                            selectedDifficulty, mobileDiff);
+    }
 }
 
 // ==================== JEU ====================
@@ -125,7 +156,7 @@ void LCD::setScreen(ScreenMode screen) {
 
 void LCD::returnToMenu() {
     currentScreen = SCREEN_MENU;
-    modeSelection = 0;
+    selectedDifficulty = 5;
     drawMenu();
 }
 
