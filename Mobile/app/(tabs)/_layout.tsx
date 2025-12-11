@@ -1,66 +1,114 @@
-import HeaderActions from "@/app/components/HeaderActions";
+import { COLORS, GRADIENTS, SPACING, FONT_SIZE, FONT_WEIGHT } from "@/app/_styles/theme";
+import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { Tabs } from "expo-router";
-import { Image, StyleSheet } from "react-native";
+import React from "react";
+import { StyleSheet, View } from "react-native";
+import HeaderActions from "@/app/_components/HeaderActions";
 
-const Icon = ({ src, focused }: { src: any; focused: boolean }) => (
-  <Image source={src} style={{ width: 24, height: 24, resizeMode: "contain", opacity: focused ? 1 : 0.85 }} />
+type IconName = React.ComponentProps<typeof Ionicons>["name"];
+
+interface TabIconProps {
+  name: IconName;
+  focused: boolean;
+  color: string;
+}
+
+const TabIcon = ({ name, focused, color }: TabIconProps) => (
+  <View style={[styles.iconContainer, focused && styles.iconContainerFocused]}>
+    <Ionicons name={name} size={24} color={color} />
+  </View>
 );
 
 export default function TabLayout() {
   return (
     <Tabs
-      initialRouteName="deck"
       screenOptions={{
         headerShown: true,
-        headerStyle: { backgroundColor: "#4F86A8" },
-        headerTintColor: "#fff",
-        headerTitleStyle: { fontWeight: "bold" },
+        headerStyle: { backgroundColor: COLORS.BACKGROUND },
+        headerTintColor: COLORS.TEXT_PRIMARY,
+        headerTitleStyle: { fontWeight: FONT_WEIGHT.BOLD },
+        headerShadowVisible: false,
         headerRight: () => <HeaderActions />,
-        headerRightContainerStyle: { paddingRight: 20 },
+        headerRightContainerStyle: { paddingRight: SPACING.MD },
 
-        // --- Tabbar glossy ---
+        // Tabbar style
         tabBarShowLabel: true,
-        tabBarActiveTintColor: "#fff",
-        tabBarInactiveTintColor: "rgba(255,255,255,0.7)",
-        tabBarStyle: {
-          position: "absolute",
-          backgroundColor: "transparent",
-          borderTopWidth: 0,
-          elevation: 0,
-          height: 64,
-        },
-        tabBarLabelStyle: { fontWeight: "700", fontSize: 12 },
+        tabBarActiveTintColor: COLORS.PRIMARY,
+        tabBarInactiveTintColor: COLORS.TEXT_SECONDARY,
+        tabBarStyle: styles.tabBar,
+        tabBarLabelStyle: styles.tabBarLabel,
         tabBarBackground: () => (
           <LinearGradient
-            colors={["#1e3c72", "#2a5298"]}
-            start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
+            colors={GRADIENTS.TAB}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0, y: 1 }}
             style={StyleSheet.absoluteFill}
           />
         ),
       }}
     >
       <Tabs.Screen
-        name="deck"
+        name="challenges-received"
         options={{
-          title: "Deck",
-          tabBarIcon: ({ focused }) => <Icon src={require("../../assets/images/deck.png")} focused={focused} />,
+          title: "Défis reçus",
+          tabBarIcon: ({ focused, color }) => (
+            <TabIcon name={focused ? "mail-unread" : "mail-unread-outline"} focused={focused} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
-        name="exchange"
+        name="challenges-completed"
         options={{
-          title: "Exchange",
-          tabBarIcon: ({ focused }) => <Icon src={require("../../assets/images/exchange.png")} focused={focused} />,
+          title: "Complétés",
+          tabBarIcon: ({ focused, color }) => (
+            <TabIcon name={focused ? "checkmark-done-circle" : "checkmark-done-circle-outline"} focused={focused} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="leaderboard"
+        options={{
+          title: "Classement",
+          tabBarIcon: ({ focused, color }) => (
+            <TabIcon name={focused ? "trophy" : "trophy-outline"} focused={focused} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
         name="profil"
         options={{
           title: "Profil",
-          tabBarIcon: ({ focused }) => <Icon src={require("../../assets/images/profil.png")} focused={focused} />,
+          tabBarIcon: ({ focused, color }) => (
+            <TabIcon name={focused ? "person-circle" : "person-circle-outline"} focused={focused} color={color} />
+          ),
         }}
       />
     </Tabs>
   );
 }
+
+const styles = StyleSheet.create({
+  tabBar: {
+    position: "absolute",
+    backgroundColor: "transparent",
+    borderTopWidth: 1,
+    borderTopColor: COLORS.BORDER,
+    elevation: 0,
+    height: 70,
+    paddingTop: SPACING.XS,
+    paddingBottom: SPACING.SM,
+  },
+  tabBarLabel: {
+    fontWeight: FONT_WEIGHT.SEMIBOLD,
+    fontSize: FONT_SIZE.XS,
+    marginTop: SPACING.XS,
+  },
+  iconContainer: {
+    padding: SPACING.XS,
+    borderRadius: 12,
+  },
+  iconContainerFocused: {
+    backgroundColor: `${COLORS.PRIMARY}20`,
+  },
+});
