@@ -30,12 +30,12 @@
 #define MENU_SIZE 5
 
 // ============== TIMING (ms) ==============
-#define TIMING_NORMAL_ON   500   // LED allumee en mode normal
-#define TIMING_NORMAL_OFF  300   // Pause entre LEDs en mode normal
-#define TIMING_EXPERT_ON   250   // LED allumee en mode expert
-#define TIMING_EXPERT_OFF  150   // Pause entre LEDs en mode expert
-#define TIMING_BLINK       200   // Clignotement annonce debut
-#define PLAYER_TIMEOUT     10000 // Timeout joueur (10s)
+#define TIMING_NORMAL_ON   500
+#define TIMING_NORMAL_OFF  300
+#define TIMING_EXPERT_ON   250
+#define TIMING_EXPERT_OFF  150
+#define TIMING_BLINK       200
+#define PLAYER_TIMEOUT     10000
 
 // ============== JOYSTICK ==============
 #define DEAD_ZONE_LOW  1500
@@ -89,4 +89,4 @@ struct GameResult {
     bool success;
 };
 
-#endif // CONFIG_H
+#endif

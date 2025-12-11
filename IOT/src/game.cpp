@@ -1,6 +1,7 @@
 #include "game.h"
 #include "led.h"
 #include "button.h"
+#include "PointCalculator.h"
 
 LED led;
 Button button;
@@ -12,6 +13,7 @@ void Game::init() {
     record = 0;
     lastRecord = 0;
     currentMode = MODE_NORMAL;
+    difficulty = 5;  // Difficulte par defaut
     sequence.clear();
 }
 
@@ -24,6 +26,15 @@ void Game::setMode(GameMode mode) {
     currentMode = mode;
 }
 
+void Game::setDifficulty(int diff) {
+    difficulty = constrain(diff, 1, 10);
+    Serial.print("Difficulte definie: "); Serial.println(difficulty);
+}
+
+int Game::getDifficulty() {
+    return difficulty;
+}
+
 // ==================== CLIGNOTEMENT DEBUT ====================
 
 void Game::blinkStart() {
@@ -34,26 +45,23 @@ void Game::blinkStart() {
         led.allOff();
         delay(TIMING_BLINK);
     }
-    delay(500);  // Pause avant de commencer la sequence
+    delay(500);
 }
 
 // ==================== JOUER SEQUENCE ====================
 
 void Game::playSequence() {
-    // Determiner le timing selon le mode
-    int onTime, offTime;
+    // diff 1 = lent (500ms ON, 300ms OFF)
+    // diff 10 = rapide (200ms ON, 100ms OFF)
+    int onTime = map(difficulty, 1, 10, 500, 200);
+    int offTime = map(difficulty, 1, 10, 300, 100);
 
-    if (currentMode == MODE_EXPERT) {
-        onTime = TIMING_EXPERT_ON;
-        offTime = TIMING_EXPERT_OFF;
-    } else {
-        onTime = TIMING_NORMAL_ON;
-        offTime = TIMING_NORMAL_OFF;
-    }
+    Serial.print("Timing - ON: "); Serial.print(onTime);
+    Serial.print("ms, OFF: "); Serial.print(offTime); Serial.println("ms");
 
     // Jouer chaque couleur de la sequence
     for (int i = 0; i < sequence.length(); i++) {
-        int color = sequence[i] - '0';  // Convertir char '1','2','3' en int 1,2,3
+        int color = sequence[i] - '0';
         led.ledOn(color);
         delay(onTime);
         led.ledOff(color);
@@ -66,84 +74,46 @@ void Game::playSequence() {
 bool Game::playerTurn() {
     for (int i = 0; i < sequence.length(); i++) {
         int expectedColor = sequence[i] - '0';
-
-        // Attendre qu'un bouton soit presse (avec timeout)
+        // Attendre que le joueur appuie sur un bouton ou timeout
         unsigned long startTime = millis();
         while (!button.isPressed()) {
             if (millis() - startTime > PLAYER_TIMEOUT) {
-                return false;  // Timeout - echec
+                return false;
             }
             delay(10);
         }
 
-        // Verifier si la couleur correspond
         if (button.sameColor(expectedColor)) {
             upRecord();
-            // Feedback visuel: allumer la LED correspondante
             led.ledOn(expectedColor);
             delay(300);
             led.ledOff(expectedColor);
         } else {
-            return false;  // Mauvaise couleur - echec
+            return false;
         }
 
         // Attendre que le bouton soit relache
         while (button.isPressed()) {
-            delay(10);
+            delay(10); //debouncing
         }
-        delay(100);  // Petit delai entre les pressions
+        delay(100);
     }
 
-    return true;  // Sequence complete avec succes
+    return true;
 }
 
 // ==================== FIN DE PARTIE ====================
 
 void Game::gameOver() {
-    // Selon les specifications: tout s'eteint, pas de clignotement
     led.allOff();
 
-    // Mettre a jour le record si necessaire
     if (record > lastRecord) {
         lastRecord = record;
     }
 }
 
-// ==================== CALCUL DES POINTS ====================
-
 GameResult Game::calculateResult(bool success) {
-    GameResult result;
-    result.success = success;
-    result.score = record;
-    result.sequenceLength = sequence.length();
-
-    int basePoints = sequence.length() * 10;  // 10 points par couleur
-    float multiplier = (currentMode == MODE_EXPERT) ? 2.0 : 1.0;
-    float completionRatio = (float)record / sequence.length();
-
-    if (success) {
-        // Reussite complete: joueur gagne, challenger perd
-        result.pointsGagnes = (int)(basePoints * multiplier);
-        result.pointsInfliges = (int)(basePoints * multiplier * 0.5);
-    } else {
-        // Echec: points partiels, challenger peut gagner si echec tot
-        float penalty = 1.0 - completionRatio;
-
-        // Points partiels pour les bonnes reponses
-        result.pointsGagnes = (int)(record * 5 * multiplier);
-
-        // Si echec tot (< 50%), challenger gagne des points
-        // Si echec tard (>= 50%), challenger perd moins de points
-        if (completionRatio < 0.5) {
-            // Challenger gagne des points (valeur negative = gain pour lui)
-            result.pointsInfliges = -(int)(basePoints * penalty * 0.3);
-        } else {
-            // Challenger perd des points mais moins qu'une reussite complete
-            result.pointsInfliges = (int)(basePoints * completionRatio * 0.25);
-        }
-    }
-
-    return result;
+    return PointCalculator::calculate(record, sequence.length(), difficulty);
 }
 
 // ==================== ACCESSEURS ====================

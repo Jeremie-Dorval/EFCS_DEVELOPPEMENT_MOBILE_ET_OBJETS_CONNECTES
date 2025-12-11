@@ -8,20 +8,22 @@ class Game {
     public:
         void init();
 
-        // Sequence
+        // Sequence et difficulte
         void setSequence(const String seq);
         void setMode(GameMode mode);
+        void setDifficulty(int diff);
+        int getDifficulty();
 
         // Gameplay
-        void blinkStart();                    // Clignotement 3x avant sequence
-        void playSequence();                  // Joue la sequence avec timing selon mode
-        bool playerTurn();                    // Tour du joueur
-        void gameOver();                      // Fin de partie (tout s'eteint)
+        void blinkStart();
+        void playSequence();
+        bool playerTurn();
+        void gameOver();
 
         // Score et points
         int getRecord();
         int getSequenceLength();
-        GameResult calculateResult(bool success);  // Calcule les points
+        GameResult calculateResult(bool success);
 
         void resetGame();
 
@@ -30,8 +32,9 @@ class Game {
         int lastRecord;
         String sequence;
         GameMode currentMode;
+        int difficulty;  // 1-10, utilise pour timing et calcul points
 
         void upRecord();
 };
 
-#endif // GAME_H
+#endif
