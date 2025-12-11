@@ -13,8 +13,6 @@ class Joystick {
         #define DEAD_ZONE_LOW  1500
         #define DEAD_ZONE_HIGH 2600
 
-        int verticalPosition;
-        bool buttonState = false;
         bool lastButtonState;
         int lastDirection;
 };

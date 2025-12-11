@@ -7,6 +7,7 @@ void Joystick::begin() {
     pinMode(JOY_Y, INPUT);
     pinMode(JOY_BTN, INPUT_PULLUP);
 
+    lastButtonState = HIGH;
     lastDirection = 0;
 }
 
@@ -15,7 +16,19 @@ int Joystick::getVerticalPosition() {
 }
 
 bool Joystick::isButtonPressed() {
-    return digitalRead(JOY_BTN) == LOW;
+    bool currentState = digitalRead(JOY_BTN);
+    bool pressed = false;
+
+    // Détection de front descendant (HIGH → LOW)
+    if (currentState == LOW && lastButtonState == HIGH) {
+        delay(50);  // Debounce
+        if (digitalRead(JOY_BTN) == LOW) {
+            pressed = true;
+        }
+    }
+
+    lastButtonState = currentState;
+    return pressed;
 }
 
 bool Joystick::isUpPressed() {
